@@ -34,29 +34,31 @@ function fileAdded (path) {
 }
 
 function fileChanged (path) {
+	var folder = mediaHelper.parseFolder(path);
 	var parsedPath = mediaHelper.parsePath(path);
 	var parsedFile = mediaHelper.parseFileName(path);
 
-	for (let clip of clips) {
+	for (let clip of clips[folder]) {
 		if (clip.path === parsedPath) {
 			connection.cinf(parsedFile).then(casparObject => {
 				clip.path = parsedPath;
 				clip.name = parsedFile;
 				clip.duration = mediaHelper.parseDuration(casparObject.response.data.duration, casparObject.response.data.fps);
 				clip.created = casparObject.response.data.created;
-				clips.sort(mediaHelper.compareClipOrder);
+				clips[folder].sort(mediaHelper.compareClipOrder);
 			});
 		}
 	}
 }
 
 function fileRemoved (path) {
+	var folder = mediaHelper.parseFolder(path);
 	var parsedPath = mediaHelper.parsePath(path);
 
-	for (var i in clips) {
-		if (clips[i].path === parsedPath) {
-			clips.splice(i, 1);
-			clips.sort(mediaHelper.compareClipOrder);
+	for (var i in clips[folder]) {
+		if (clips[folder][i].path === parsedPath) {
+			clips[folder].splice(i, 1);
+			clips[folder].sort(mediaHelper.compareClipOrder);
 		}
 	}
 }
