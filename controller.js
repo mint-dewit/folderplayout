@@ -5,27 +5,31 @@ var libqueue = require('./lib/queue.js');
 var fs = require('fs');
 
 var connection = new CasparCG({onConnected: connected});
-var clips = [];
+var clips = {Playlist: []};
 var queue;
 var timetable;
 var watched = [];
+var mediaFolder;
 
 queue = libqueue(connection);
 
 function connected () {
 	console.log('connected');
 	connection.clear(1);
-	connection.play(1, 10, 'DECKLINK 1');
+	connection.play
+	(1, 10, 'DECKLINK 1');
 }
 
 function fileAdded (path) {
+	var folder = mediaHelper.parseFolder(path);
 	var parsedPath = mediaHelper.parsePath(path);
 	var parsedFile = mediaHelper.parseFileName(path);
 
 	connection.cinf(parsedFile).then(casparObject => {
 		var parsedDuratiion = mediaHelper.parseDuration(casparObject.response.data.duration, casparObject.response.data.fps);
-		clips.push({path: parsedPath, name: parsedFile, duration: parsedDuratiion, created: casparObject.response.data.created});
-		clips.sort(mediaHelper.compareClipOrder);
+		clips[folder].push({path: parsedPath, name: parsedFile, duration: parsedDuratiion});
+		clips[folder].sort(mediaHelper.compareClipOrder);
+		console.log(clips);
 	})
 }
 
@@ -57,14 +61,14 @@ function fileRemoved (path) {
 	}
 }
 
-var playbackDirectories = chokidar.watch('../Server/media/Playlist');
+var playbackDirectories = chokidar.watch('../CasparCG Server/media/Playlist'); // hardcoded path is questionable
 
 playbackDirectories
 	.on('add', fileAdded)
 	.on('change', fileChanged)
 	.on('unlink', fileRemoved);
 
-function configChanged () {
+function timesChanged () {
 	for (let dir in timetable) {
 		let found = false;
 		for (let watcher of watched) {
@@ -72,7 +76,9 @@ function configChanged () {
 		}
 		if (!found) {
 			watched.push(dir);
-			playbackDirectories.add(dir);
+			console.log('../CasparCG Server/media/'+dir)
+			playbackDirectories.add('../CasparCG Server/media/'+dir);
+			clips[dir] = [];
 		}
 	}
 
@@ -85,6 +91,8 @@ function configChanged () {
 		}
 		if (!found) {
 			watched.splice(i, 1);
+			// TODO: unwatch
+			clips[dir] = undefined
 		}
 	}
 }
@@ -104,12 +112,20 @@ configFile.on('change', () => {
 })
 
 function checkTime () {
-	var date = new Date();
+	var date = new Date ();
 
 	if (date.getMinutes() === 59 && date.getSeconds() === 58) {
-		console.log('load');
-		connection.mixerVolume(1, 10, 0, 50)
-		for (let clip of clips) queue.add(clip);
+		console.log('load', timetable);
+		connection.mixerVolume(1, 10, 0, 50);
+		for (let clip of clips.Playlist) queue.add(clip);
+		for (var dir in timetable) {
+			for (let time of timetable[dir]) {
+				if (time-1 === date.getHours()) {
+					console.log('append folder:', dir);
+					for (let clip of clips[dir]) queue.add(clip);
+				}
+			}
+		}
 		setTimeout(checkTime, 1000);
 	}
 	else if (date.getMinutes() === 0 && date.getSeconds() === 0) {
@@ -121,9 +137,9 @@ function checkTime () {
 }
 
 try {
-	let config = fs.readFileSync('./timetable.json');
-	timetable = JSON.parse(config);
-	configChanged();
+	let times = fs.readFileSync('./timetable.json');
+	timetable = JSON.parse(times);
+	timesChanged();
 }
 catch (err) {
 	console.log('error parsing config!', err);
