@@ -61,7 +61,7 @@ function fileRemoved (path) {
 	}
 }
 
-var playbackDirectories = chokidar.watch('../CasparCG Server/media/Playlist'); // hardcoded path is questionable
+var playbackDirectories = chokidar.watch('../Server/media/Playlist'); // hardcoded path is questionable
 
 playbackDirectories
 	.on('add', fileAdded)
@@ -76,8 +76,8 @@ function timesChanged () {
 		}
 		if (!found) {
 			watched.push(dir);
-			console.log('../CasparCG Server/media/'+dir)
-			playbackDirectories.add('../CasparCG Server/media/'+dir);
+			console.log('../Server/media/'+dir)
+			playbackDirectories.add('../Server/media/'+dir);
 			clips[dir] = [];
 		}
 	}
@@ -91,7 +91,7 @@ function timesChanged () {
 		}
 		if (!found) {
 			watched.splice(i, 1);
-			playbackDirectories.unwatch('../CasparCG Server/media/'+dir);
+			playbackDirectories.unwatch('../Server/media/'+dir);
 			clips[dir] = undefined
 		}
 	}
