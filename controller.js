@@ -91,7 +91,7 @@ function timesChanged () {
 		}
 		if (!found) {
 			watched.splice(i, 1);
-			// TODO: unwatch
+			playbackDirectories.unwatch('../CasparCG Server/media/'+dir);
 			clips[dir] = undefined
 		}
 	}
@@ -115,7 +115,7 @@ function checkTime () {
 	var date = new Date ();
 
 	if (date.getMinutes() === 59 && date.getSeconds() === 58) {
-		console.log('load', timetable);
+		console.log('load');
 		connection.mixerVolume(1, 10, 0, 50);
 		for (let clip of clips.Playlist) queue.add(clip);
 		for (var dir in timetable) {
