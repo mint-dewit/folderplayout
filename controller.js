@@ -115,19 +115,26 @@ configFile.on('change', () => {
 
 function checkTime () {
 	var date = new Date ();
+	var mute = false;
 
 	if (date.getMinutes() === 59 && date.getSeconds() === 58) {
 		console.log('load');
-		connection.mixerVolume(1, 10, 0, 50);
-		for (let clip of clips.Playlist) queue.add(clip);
+		for (let clip of clips.Playlist) {
+			queue.add(clip);
+			mute = true;
+		}
 		for (var dir in timetable) {
 			for (let time of timetable[dir]) {
 				if (time-1 === date.getHours()) {
 					console.log('append folder:', dir);
-					for (let clip of clips[dir]) queue.add(clip);
+					for (let clip of clips[dir]) {
+						mute = true;
+						queue.add(clip);
+					}
 				}
 			}
 		}
+		if (mute) connection.mixerVolume(1, 10, 0, 50);
 		setTimeout(checkTime, 1000);
 	}
 	else if (date.getMinutes() === 0 && date.getSeconds() === 0) {
