@@ -16,8 +16,8 @@ queue = libqueue(connection);
 function connected () {
 	console.log('connected');
 	connection.clear(1);
-	connection.play
-	(1, 10, 'DECKLINK 1');
+	connection.playDecklink
+	(1, 10, 1);
 }
 
 function fileAdded (path) {
