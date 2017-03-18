@@ -3,6 +3,7 @@ var {CasparCG} = require('casparcg-connection')
 var mediaHelper = require('./lib/mediaHelper.js');
 var libqueue = require('./lib/queue.js');
 var fs = require('fs');
+var config = require('lib/config.js');
 
 var connection = new CasparCG({onConnected: connected});
 var clips = {Playlist: []};
@@ -10,14 +11,23 @@ var queue;
 var timetable;
 var watched = [];
 var mediaFolder;
+var playbackDirectories;
 
 queue = libqueue(connection);
 
 function connected () {
 	console.log('connected');
 	connection.clear(1);
-	connection.playDecklink
-	(1, 10, 1);
+	connection.playDecklink(1, 10, config.device);
+
+	connection.getCasparCGPaths().then((casparPaths) => {
+		if (casparPaths.media.substring(0,1) === "/")
+			mediaFolder = casparPaths.media;
+		else
+			mediaFolder = casparPaths.root + casparPaths.media;
+		
+		gotMediaFolder();
+	})
 }
 
 function fileAdded (path) {
@@ -63,14 +73,19 @@ function fileRemoved (path) {
 	}
 }
 
-var playbackDirectories = chokidar.watch('../Server/media/Playlist'); // hardcoded path is questionable
+function gotMediaFolder() {
+	playbackDirectories = chokidar.watch(mediaFolder + 'Playlist');
 
-playbackDirectories
-	.on('add', fileAdded)
-	.on('change', fileChanged)
-	.on('unlink', fileRemoved);
+	playbackDirectories
+		.on('add', fileAdded)
+		.on('change', fileChanged)
+		.on('unlink', fileRemoved);
+	
+	timesChanged();
+}
 
 function timesChanged () {
+	if (mediaFolder === undefined) return;
 	for (let dir in timetable) {
 		let found = false;
 		for (let watcher of watched) {
@@ -78,8 +93,8 @@ function timesChanged () {
 		}
 		if (!found) {
 			watched.push(dir);
-			console.log('../Server/media/'+dir)
-			playbackDirectories.add('../Server/media/'+dir);
+			console.log(mediaFolder+dir)
+			playbackDirectories.add(mediaFolder+dir);
 			clips[dir] = [];
 		}
 	}
@@ -93,20 +108,20 @@ function timesChanged () {
 		}
 		if (!found) {
 			watched.splice(i, 1);
-			playbackDirectories.unwatch('../Server/media/'+dir);
+			playbackDirectories.unwatch(mediaFolder+dir);
 			clips[dir] = undefined
 		}
 	}
 }
 
-var configFile = chokidar.watch('./timetable.json');
+var timesFile = chokidar.watch(config.timetable);
 
-configFile.on('change', () => {
-	var config = fs.readFileSync('./timetable.json');
+timesFile.on('change', () => {
+	var config = fs.readFileSync(config.timetable);
 
 	try {
 		timetable = JSON.parse(config);
-		configChanged();
+		timesChanged();
 	}
 	catch (err) {
 		console.log('error parsing config!');
