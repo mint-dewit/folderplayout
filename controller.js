@@ -3,7 +3,7 @@ var {CasparCG} = require('casparcg-connection')
 var mediaHelper = require('./lib/mediaHelper.js');
 var libqueue = require('./lib/queue.js');
 var fs = require('fs');
-var config = require('lib/config.js');
+var config;// = require('./lib/config.js');
 
 var connection = new CasparCG({onConnected: connected});
 var clips = {Playlist: []};
@@ -14,6 +14,15 @@ var mediaFolder;
 var playbackDirectories;
 
 queue = libqueue(connection);
+
+try {
+    config = JSON.parse(fs.readFileSync('./config.json'));
+    console.log('parsed conf ', config)
+}
+catch (err) {
+    console.log('error parsing config!');
+	process.exit();
+}
 
 function connected () {
 	console.log('connected');
