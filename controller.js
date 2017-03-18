@@ -3,7 +3,7 @@ var {CasparCG} = require('casparcg-connection')
 var mediaHelper = require('./lib/mediaHelper.js');
 var libqueue = require('./lib/queue.js');
 var fs = require('fs');
-var config;// = require('./lib/config.js');
+var config;
 
 var connection = new CasparCG({onConnected: connected});
 var clips = {Playlist: []};
