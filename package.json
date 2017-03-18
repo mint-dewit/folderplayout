@@ -1,7 +1,11 @@
 {
   "name": "playout-controller",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "author": "Balte de Wit",
+  "repository": {
+    "type": "github",
+    "url": "https://github.com/baltedewit/folderplayout/"
+  },
   "dependencies": {
     "casparcg-connection": "^0.17.1",
     "chokidar": "^1.6.1",
