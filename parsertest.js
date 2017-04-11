@@ -14,6 +14,15 @@ var watched = [];
 var mediaFolder;
 var playbackDirectories;
 
+// data part of casparcg-connection response from cls connection
+// example dummy data
+var library = [
+	{ name: 'DAILY/CLIP1', type: 'video', size: 6445960, changed: 1481832374000, frames: 268, frameTime: '1/25', frameRate: 25, duration: 10.72 },
+	{ name: 'DAILY/CLIP2', type: 'video', size: 6445960, changed: 1481832374000, frames: 268, frameTime: '1/25', frameRate: 25, duration: 10.72 },
+	{ name: 'DAYS/SUNDAY/CLIP1', type: 'video', size: 6445960, changed: 1481832374000, frames: 268, frameTime: '1/25', frameRate: 25, duration: 10.72 },
+	{ name: 'DAYS/SUNDAY/CLIP1', type: 'video', size: 6445960, changed: 1481832374000, frames: 268, frameTime: '1/25', frameRate: 25, duration: 10.72 }
+]
+
 queue = libqueue(connection);
 
 try {
@@ -26,16 +35,16 @@ catch (err) {
 }
 
 function timesChanged () {
-    parser.execute(timetable);
+    parser.execute(timetable, library);
 }
 
 var timesFile = chokidar.watch(config.timetable);
 
 timesFile.on('change', () => {
-	var config = fs.readFileSync(config.timetable);
+	let times = fs.readFileSync(config.timetable);
 
 	try {
-		timetable = JSON.parse(config);
+		timetable = JSON.parse(times);
 		timesChanged();
 	}
 	catch (err) {

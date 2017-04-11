@@ -1,0 +1,23 @@
+[
+    {
+        "type": "group",
+        "times": [
+            "07:00:00",
+            "12:00:00",
+            "15:00:00",
+            "17:00:00",
+            "21:00:00"
+        ],
+        "children": [
+            {
+                "type": "folder",
+                "path": "daily"
+            },
+            {
+                "type": "folder",
+                "path": "days/sunday",
+                "days": [3]
+            }
+        ]
+    }
+]
