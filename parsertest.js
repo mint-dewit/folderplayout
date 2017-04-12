@@ -12,13 +12,7 @@ var schedule;
 
 // data part of casparcg-connection response from cls connection
 // example dummy data
-var library = [
-	{ name: 'DAILY/CLIP1', type: 'video', size: 6445960, changed: 1481832374000, frames: 268, frameTime: '1/25', frameRate: 25, duration: 10.72 },
-	{ name: 'DAILY/CLIP2', type: 'video', size: 6445960, changed: 1481832374000, frames: 268, frameTime: '1/25', frameRate: 25, duration: 10.72 },
-	{ name: 'DAYS/SUNDAY/CLIP1', type: 'video', size: 6445960, changed: 1481832374000, frames: 268, frameTime: '1/25', frameRate: 25, duration: 10.72 },
-	{ name: 'DAYS/SUNDAY/CLIP1', type: 'video', size: 6445960, changed: 1481832374000, frames: 268, frameTime: '1/25', frameRate: 25, duration: 10.72 },
-	{ name: 'PRIORITY', type: 'video', size: 6445960, changed: 1481832374000, frames: 134, frameTime: '1/25', frameRate: 25, duration: 5.36 }
-]
+var library = []
 var libraryWatcher;
 
 function connected () {
@@ -55,7 +49,7 @@ catch (err) {
 function libraryChanged() {
 	if (connection.connected) {
 		connection.cls().then((responseObject) => {
-			library = responseObject;
+			library = responseObject.response.data;
 		})
 	}
 }
