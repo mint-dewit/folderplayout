@@ -5,7 +5,7 @@ var parser = require('./lib/parser.js');
 var fs = require('fs');
 var config;
 
-var connection;// = new CasparCG({onConnected: connected});
+var connection = new CasparCG({onConnected: connected});
 var queue;
 var timetable;
 var schedule;
@@ -19,8 +19,20 @@ var library = [
 	{ name: 'DAYS/SUNDAY/CLIP1', type: 'video', size: 6445960, changed: 1481832374000, frames: 268, frameTime: '1/25', frameRate: 25, duration: 10.72 },
 	{ name: 'PRIORITY', type: 'video', size: 6445960, changed: 1481832374000, frames: 134, frameTime: '1/25', frameRate: 25, duration: 5.36 }
 ]
+var libraryWatcher;
 
-queue = libqueue(connection);
+function connected () {
+	connection.getCasparCGPaths().then((casparPaths) => {
+		console.log(casparPaths.root + casparPaths.media)
+		queue = libqueue(connection);
+		libraryWatcher = chokidar.watch(casparPaths.root + casparPaths.media);
+		libraryWatcher
+			.on('add', libraryChanged)
+			.on('change', libraryChanged)
+			.on('unlink', libraryChanged)
+		libraryChanged();
+	})
+}
 
 /* Config parsing
  * Read the config on start up
@@ -36,13 +48,25 @@ catch (err) {
 }
 
 
+/* Media library watcher
+ *
+ */
+
+function libraryChanged() {
+	if (connection.connected) {
+		connection.cls().then((responseObject) => {
+			library = responseObject;
+		})
+	}
+}
+
 /* Schedule checking
  * Check to add to queue every second
  */
 
 function checkSchedule() {
 	if (schedule === undefined) setTimeout(checkSchedule, 1000);
-	let curDate = new Date('2017-4-12 07:00:00');
+	let curDate = new Date();
 
 	for (let time in schedule) {
 		if ((new Date(curDate.getTime() + 2000)).toLocaleTimeString('en-US', {hour12:false}) === time) {
@@ -56,7 +80,7 @@ function checkSchedule() {
 		}
 	}
 }
-schedule = {'07:00:00':{}}
+
 checkSchedule();
 
 
@@ -66,30 +90,20 @@ checkSchedule();
  * Read the timetable on startup and when it changes.
  */
 
-function timesChanged () {
-    // parser.execute(timetable, library);
-}
-
-var timesFile = chokidar.watch(config.timetable);
-
-timesFile.on('change', () => {
-	let times = fs.readFileSync(config.timetable);
-
+function timesFileChanged() {
 	try {
+		let times = fs.readFileSync(config.timetable);
 		timetable = JSON.parse(times);
-		timesChanged();
+		// parser.execute(timetable, library);
 	}
 	catch (err) {
 		console.log('error parsing config!');
 	}
-})
+}
 
-try {
-	let times = fs.readFileSync(config.timetable);
-	timetable = JSON.parse(times);
-	timesChanged();
-}
-catch (err) {
-	console.log('error parsing config!', err);
-}
+var timesFile = chokidar.watch(config.timetable);
+
+timesFile.on('change', timesFileChanged)
+
+timesFileChanged();
 
