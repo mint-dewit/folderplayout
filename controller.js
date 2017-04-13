@@ -1,19 +1,46 @@
 var chokidar = require('chokidar');
 var {CasparCG} = require('casparcg-connection')
-var mediaHelper = require('./lib/mediaHelper.js');
 var libqueue = require('./lib/queue.js');
+var parser = require('./lib/parser.js');
 var fs = require('fs');
 var config;
 
 var connection = new CasparCG({onConnected: connected});
-var clips = {Playlist: []};
 var queue;
 var timetable;
-var watched = [];
-var mediaFolder;
-var playbackDirectories;
+var schedule;
+var firstConnect = true;
 
-queue = libqueue(connection);
+// data part of casparcg-connection response from cls connection
+var library = [];
+var libraryWatcher;
+
+function connected () {
+	if (firstConnect) {
+		connection.playDecklink(1, 10, config.device)
+		connection.getCasparCGPaths().then((casparPaths) => {
+			console.log(casparPaths.root + casparPaths.media)
+			queue = libqueue(connection);
+			libraryWatcher = chokidar.watch(casparPaths.root + casparPaths.media, {ignoreInitial: true});
+			libraryWatcher
+				.on('add', libraryChanged)
+				.on('change', libraryChanged)
+				.on('unlink', libraryChanged)
+			libraryChanged();
+
+			queue.on('queue-empty', () => {
+				console.log('queue ended, volume to 1')
+				connection.mixerVolume(1, 10, 1, 50);
+			})
+		})
+	}
+		
+	firstConnect = false;
+}
+
+/* Config parsing
+ * Read the config on start up
+ */
 
 try {
     config = JSON.parse(fs.readFileSync('./config.json'));
@@ -24,159 +51,70 @@ catch (err) {
 	process.exit();
 }
 
-function connected () {
-	console.log('connected');
-	connection.clear(1);
-	connection.playDecklink(1, 10, config.device);
 
-	connection.getCasparCGPaths().then((casparPaths) => {
-		if (casparPaths.media.substring(0,1) === "/")
-			mediaFolder = casparPaths.media;
-		else
-			mediaFolder = casparPaths.root + casparPaths.media;
-		
-		gotMediaFolder();
-	})
-}
+/* Media library watcher
+ *
+ */
 
-function fileAdded (path) {
-	var folder = mediaHelper.parseFolder(path);
-	var parsedPath = mediaHelper.parsePath(path);
-	var parsedFile = mediaHelper.parseFileName(path);
-
-	connection.cinf(parsedFile).then(casparObject => {
-		var parsedDuratiion = mediaHelper.parseDuration(casparObject.response.data.duration, casparObject.response.data.fps);
-		clips[folder].push({path: parsedPath, name: parsedFile, duration: parsedDuratiion});
-		clips[folder].sort(mediaHelper.compareClipOrder);
-		console.log(clips);
-	})
-}
-
-function fileChanged (path) {
-	var folder = mediaHelper.parseFolder(path);
-	var parsedPath = mediaHelper.parsePath(path);
-	var parsedFile = mediaHelper.parseFileName(path);
-
-	for (let clip of clips[folder]) {
-		if (clip.path === parsedPath) {
-			connection.cinf(parsedFile).then(casparObject => {
-				clip.path = parsedPath;
-				clip.name = parsedFile;
-				clip.duration = mediaHelper.parseDuration(casparObject.response.data.duration, casparObject.response.data.fps);
-				clip.created = casparObject.response.data.created;
-				clips[folder].sort(mediaHelper.compareClipOrder);
-			});
-		}
+function libraryChanged() {
+	if (connection.connected) {
+		connection.cls().then((responseObject) => {
+			library = responseObject.response.data;
+			schedule = parser.execute(timetable, library);
+		})
 	}
 }
 
-function fileRemoved (path) {
-	var folder = mediaHelper.parseFolder(path);
-	var parsedPath = mediaHelper.parsePath(path);
+/* Schedule checking
+ * Check to add to queue every second
+ */
 
-	for (var i in clips[folder]) {
-		if (clips[folder][i].path === parsedPath) {
-			clips[folder].splice(i, 1);
-			clips[folder].sort(mediaHelper.compareClipOrder);
-		}
+function checkSchedule() {
+	if (schedule === undefined) {
+		setTimeout(checkSchedule, 1000);
+		return
 	}
-}
-
-function gotMediaFolder() {
-	playbackDirectories = chokidar.watch(mediaFolder + 'Playlist');
-
-	playbackDirectories
-		.on('add', fileAdded)
-		.on('change', fileChanged)
-		.on('unlink', fileRemoved);
 	
-	timesChanged();
-}
+	let curDate = new Date();
 
-function timesChanged () {
-	if (mediaFolder === undefined) return;
-	for (let dir in timetable) {
-		let found = false;
-		for (let watcher of watched) {
-			if (watcher === dir) found = true;
-		}
-		if (!found) {
-			watched.push(dir);
-			console.log(mediaFolder+dir)
-			playbackDirectories.add(mediaFolder+dir);
-			clips[dir] = [];
+	for (let time in schedule) {
+		if ((new Date(curDate.getTime() + 2000)).toLocaleTimeString('en-US', {hour12:false}) === time) {
+			console.log('mute + add to queue');
+			connection.mixerVolume(1, 10, 0, 50);
+			for (let clip of schedule[time].clips)
+				queue.add(clip);
+		} else if (curDate.toLocaleTimeString('en-US', {hour12:false}) === time) {
+			console.log('play queue!');
+			queue.play()
 		}
 	}
+	setTimeout(checkSchedule, 1000)
+}
 
-	for (var i in watched) {
-		let found = false
-		for (let dir in timetable) {
-			if (dir === watched[i]) {
-				found = true;
-			}
-		}
-		if (!found) {
-			watched.splice(i, 1);
-			playbackDirectories.unwatch(mediaFolder+dir);
-			clips[dir] = undefined
-		}
+checkSchedule();
+
+
+
+
+/* Timetable parsing
+ * Read the timetable on startup and when it changes.
+ */
+
+function timesFileChanged() {
+	try {
+		let times = fs.readFileSync(config.timetable);
+		timetable = JSON.parse(times);
+		schedule = parser.execute(timetable, library);
+		console.log(schedule)
+	}
+	catch (err) {
+		console.log('error parsing config!');
 	}
 }
 
 var timesFile = chokidar.watch(config.timetable);
 
-timesFile.on('change', () => {
-	var config = fs.readFileSync(config.timetable);
+timesFile.on('change', timesFileChanged)
 
-	try {
-		timetable = JSON.parse(config);
-		timesChanged();
-	}
-	catch (err) {
-		console.log('error parsing config!');
-	}
-})
-
-function checkTime () {
-	var date = new Date ();
-	var mute = false;
-
-	if (date.getMinutes() === 59 && date.getSeconds() === 58) {
-		console.log('load');
-		for (let clip of clips.Playlist) {
-			queue.add(clip);
-			mute = true;
-		}
-		for (var dir in timetable) {
-			for (let time of timetable[dir]) {
-				if (time-1 === date.getHours()) {
-					console.log('append folder:', dir);
-					for (let clip of clips[dir]) {
-						mute = true;
-						queue.add(clip);
-					}
-				}
-			}
-		}
-		if (mute) connection.mixerVolume(1, 10, 0, 50);
-		setTimeout(checkTime, 1000);
-	}
-	else if (date.getMinutes() === 0 && date.getSeconds() === 0) {
-		queue.play();
-		setTimeout(checkTime, 1000);
-	} else {
-		setTimeout(checkTime, 50);
-	}
-}
-
-try {
-	let times = fs.readFileSync('./timetable.json');
-	timetable = JSON.parse(times);
-	timesChanged();
-}
-catch (err) {
-	console.log('error parsing config!', err);
-}
-
-checkTime();
+timesFileChanged();
 
