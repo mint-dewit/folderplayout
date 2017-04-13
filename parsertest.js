@@ -9,23 +9,31 @@ var connection = new CasparCG({onConnected: connected});
 var queue;
 var timetable;
 var schedule;
+var firstConnect = true;
 
 // data part of casparcg-connection response from cls connection
 // example dummy data
-var library = []
+var library = [];
 var libraryWatcher;
 
 function connected () {
-	connection.getCasparCGPaths().then((casparPaths) => {
-		console.log(casparPaths.root + casparPaths.media)
-		queue = libqueue(connection);
-		libraryWatcher = chokidar.watch(casparPaths.root + casparPaths.media);
-		libraryWatcher
-			.on('add', libraryChanged)
-			.on('change', libraryChanged)
-			.on('unlink', libraryChanged)
-		libraryChanged();
-	})
+	if (firstConnect)
+		connection.getCasparCGPaths().then((casparPaths) => {
+			console.log(casparPaths.root + casparPaths.media)
+			queue = libqueue(connection);
+			libraryWatcher = chokidar.watch(casparPaths.root + casparPaths.media, {ignoreInitial: true});
+			libraryWatcher
+				.on('add', libraryChanged)
+				.on('change', libraryChanged)
+				.on('unlink', libraryChanged)
+			libraryChanged();
+
+			queue.on('queue-empty', () => {
+				console.log('queue ended, volume to 1')
+				connection.mixerVolume(1, 10, 1, 50);
+			})
+		})
+	firstConnect = false;
 }
 
 /* Config parsing
@@ -50,6 +58,7 @@ function libraryChanged() {
 	if (connection.connected) {
 		connection.cls().then((responseObject) => {
 			library = responseObject.response.data;
+			schedule = parser.execute(timetable, library);
 		})
 	}
 }
@@ -59,20 +68,25 @@ function libraryChanged() {
  */
 
 function checkSchedule() {
-	if (schedule === undefined) setTimeout(checkSchedule, 1000);
+	if (schedule === undefined) {
+		setTimeout(checkSchedule, 1000);
+		return
+	}
+	
 	let curDate = new Date();
 
 	for (let time in schedule) {
 		if ((new Date(curDate.getTime() + 2000)).toLocaleTimeString('en-US', {hour12:false}) === time) {
 			console.log('mute + add to queue');
-			// connection.mixerVolume(1, 10, 0, 50);
+			connection.mixerVolume(1, 10, 0, 50);
 			for (let clip of schedule[time].clips)
 				queue.add(clip);
 		} else if (curDate.toLocaleTimeString('en-US', {hour12:false}) === time) {
 			console.log('play queue!');
-			// queue.play()
+			queue.play()
 		}
 	}
+	setTimeout(checkSchedule, 1000)
 }
 
 checkSchedule();
@@ -88,7 +102,8 @@ function timesFileChanged() {
 	try {
 		let times = fs.readFileSync(config.timetable);
 		timetable = JSON.parse(times);
-		// parser.execute(timetable, library);
+		schedule = parser.execute(timetable, library);
+		console.log(schedule)
 	}
 	catch (err) {
 		console.log('error parsing config!');

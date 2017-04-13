@@ -4,18 +4,18 @@
         "times": [
             "07:00:00",
             "12:00:00",
-            "15:00:00",
+            "13:29:40",
             "17:00:00",
             "21:00:00"
         ],
         "children": [
             {
-                "type": "folder",
-                "path": "daily"
+                "type": "file",
+                "path": "amb"
             },
             {
-                "type": "folder",
-                "path": "days/sunday",
+                "type": "file",
+                "path": "go1080p25",
                 "days": [3]
             }
         ]
