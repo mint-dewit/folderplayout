@@ -118,3 +118,8 @@ timesFile.on('change', timesFileChanged)
 
 timesFileChanged();
 
+
+/* Update schedule every 6 hours.
+ */
+
+setInterval(() => { schedule = parser.execute(timetable, library); }, 6 * 60 * 60 * 1000);
