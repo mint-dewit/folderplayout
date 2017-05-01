@@ -3,12 +3,14 @@ var {CasparCG} = require('casparcg-connection');
 var fs = require('fs');
 var libqueue = require('./lib/queue.js');
 var libparser = require('./lib/parser.js');
+var libserver = require('./lib/server.js');
 
 var app = {};
 
 app.connection = new CasparCG({onConnected: connected});
 app.queue = libqueue(app);
 app.parser = libparser(app);
+app.server = libserver(app);
 
 var firstConnect = true;
 
