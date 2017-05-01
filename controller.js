@@ -1,53 +1,43 @@
 var chokidar = require('chokidar');
-var {CasparCG} = require('casparcg-connection')
-var libqueue = require('./lib/queue.js');
-var parser = require('./lib/parser.js');
+var {CasparCG} = require('casparcg-connection');
 var fs = require('fs');
-var config;
+var libqueue = require('./lib/queue.js');
+var libparser = require('./lib/parser.js');
 
-var connection = new CasparCG({onConnected: connected});
-var queue;
-var timetable;
-var schedule;
+var app = {};
+
+app.connection = new CasparCG({onConnected: connected});
+app.queue = libqueue(app);
+app.parser = libparser(app);
+
 var firstConnect = true;
 
-// data part of casparcg-connection response from cls connection
-var library = [];
-var libraryWatcher;
+
 
 function connected () {
 	if (firstConnect) {
-		connection.playDecklink(1, 10, config.device)
-		connection.getCasparCGPaths().then((casparPaths) => {
-			console.log(casparPaths.root + casparPaths.media)
-			queue = libqueue(connection);
-			libraryWatcher = chokidar.watch(casparPaths.root + casparPaths.media, {ignoreInitial: true});
-			libraryWatcher
+		app.connection.playDecklink(1, 10, app.config.device)
+		app.connection.getCasparCGPaths().then((casparPaths) => {
+			app.libraryWatcher = chokidar.watch(casparPaths.root + casparPaths.media, {ignoreInitial: true});
+			app.libraryWatcher
 				.on('add', libraryChanged)
 				.on('change', libraryChanged)
-				.on('unlink', libraryChanged)
+				.on('unlink', libraryChanged);
 			libraryChanged();
-
-			queue.on('queue-empty', () => {
-				console.log('queue ended, volume to 1')
-				connection.mixerVolume(1, 10, 1, 50);
-			})
 		})
 	}
 		
 	firstConnect = false;
 }
 
-/* Config parsing
- * Read the config on start up
+/* app.config parsing
+ * Read the app.config on start up
  */
 
 try {
-    config = JSON.parse(fs.readFileSync('./config.json'));
-    console.log('parsed conf ', config)
+    app.config = JSON.parse(fs.readFileSync('./config.json'));
 }
 catch (err) {
-    console.log('error parsing config!');
 	process.exit();
 }
 
@@ -57,10 +47,10 @@ catch (err) {
  */
 
 function libraryChanged() {
-	if (connection.connected) {
-		connection.cls().then((responseObject) => {
-			library = responseObject.response.data;
-			schedule = parser.execute(timetable, library);
+	if (app.connection.connected) {
+		app.connection.cls().then((responseObject) => {
+			app.library = responseObject.response.data;
+			app.schedule = app.parser.execute();
 		})
 	}
 }
@@ -70,28 +60,33 @@ function libraryChanged() {
  */
 
 function checkSchedule() {
-	if (schedule === undefined) {
+	if (app.schedule === undefined) {
 		setTimeout(checkSchedule, 1000);
 		return
 	}
 	
 	let curDate = new Date();
 
-	for (let time in schedule) {
+	for (let time in app.schedule) {
 		if ((new Date(curDate.getTime() + 2000)).toLocaleTimeString('en-US', {hour12:false}) === time) {
 			console.log('mute + add to queue');
-			connection.mixerVolume(1, 10, 0, 50);
-			for (let clip of schedule[time].clips)
-				queue.add(clip);
+			app.connection.mixerVolume(1, 10, 0, 50);
+			for (let clip of app.schedule[time].clips)
+				app.queue.add(clip);
 		} else if (curDate.toLocaleTimeString('en-US', {hour12:false}) === time) {
 			console.log('play queue!');
-			queue.play()
+			app.queue.play()
 		}
 	}
 	setTimeout(checkSchedule, 1000)
 }
 
 checkSchedule();
+
+// Part of schedule checking: return mixervolume.
+app.queue.on('queue-empty', () => {
+	app.connection.mixerVolume(1, 10, 1, 50);
+})
 
 
 
@@ -102,17 +97,17 @@ checkSchedule();
 
 function timesFileChanged() {
 	try {
-		let times = fs.readFileSync(config.timetable);
-		timetable = JSON.parse(times);
-		schedule = parser.execute(timetable, library);
-		console.log(schedule)
+		let times = fs.readFileSync(app.config.timetable);
+		app.timetable = JSON.parse(times);
+		app.schedule = app.parser.execute();
+		console.log(app.schedule)
 	}
 	catch (err) {
-		console.log('error parsing config!');
+		console.log('error parsing config!', err);
 	}
 }
 
-var timesFile = chokidar.watch(config.timetable);
+var timesFile = chokidar.watch(app.config.timetable);
 
 timesFile.on('change', timesFileChanged)
 
@@ -122,4 +117,4 @@ timesFileChanged();
 /* Update schedule every 6 hours.
  */
 
-setInterval(() => { schedule = parser.execute(timetable, library); }, 6 * 60 * 60 * 1000);
+setInterval(() => { app.schedule = app.parser.execute(timetable, library); }, 6 * 60 * 60 * 1000);
