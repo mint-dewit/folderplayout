@@ -111,9 +111,19 @@ function timesFileChanged() {
 
 var timesFile = chokidar.watch(app.config.timetable);
 
-timesFile.on('change', timesFileChanged)
+timesFile.on('change', timesFileChanged);
 
 timesFileChanged();
+
+app.writeSchedule = function (schedule) {
+	fs.writeFile(app.config.timetable, JSON.stringify(schedule), function(err) {
+		if(err) {
+			return console.log(err);
+		}
+
+		console.log("The file was saved!");
+	});
+}
 
 
 /* Update schedule every 6 hours.
