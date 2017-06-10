@@ -1,0 +1,21 @@
+==== changes w.r.t folderplayout v1 ===
++ new parser now supports advanced timetables:
+    * recursive formatting
+    * date ranges
+    * weeks
+    * day of the week
+    * HH:MM:SS format vs. just hours in v1
+    * support for individual file playback
+
++ config file
+    * support for decklink device number
+    * support for custom timetable file
+
++ major code refactoring of controller.js
++ internal media library using CLS command, vs using CINF for individual files & folders
+
++ ws server for external control
+
++ minor bug fixes
+
+- removal of winser
