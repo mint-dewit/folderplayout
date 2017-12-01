@@ -37,7 +37,7 @@ function connected () {
  */
 
 try {
-    app.config = JSON.parse(fs.readFileSync('./config.json'));
+	app.config = JSON.parse(fs.readFileSync('./config.json'));
 }
 catch (err) {
 	process.exit();
@@ -71,8 +71,12 @@ function checkSchedule() {
 
 	for (let time in app.schedule) {
 		if ((new Date(curDate.getTime() + 2000)).toLocaleTimeString('en-US', {hour12:false}) === time) {
-			console.log('mute + add to queue');
-			app.connection.mixerVolume(1, 10, 0, 50);
+			console.log(app.schedule[time].clips[0].audio ? 'mute + add to queue': 'add to queue (no mute)');
+			if (app.schedule[time].clips[0].audio === true) {
+				app.queue.setMuted(false, 2000);
+			} else {
+				app.queue.setMuted(true, 0);
+			}
 			for (let clip of app.schedule[time].clips)
 				app.queue.add(clip);
 		} else if (curDate.toLocaleTimeString('en-US', {hour12:false}) === time) {
@@ -87,7 +91,9 @@ checkSchedule();
 
 // Part of schedule checking: return mixervolume.
 app.queue.on('queue-empty', () => {
-	app.connection.mixerVolume(1, 10, 1, 50);
+	if (app.queue.getAudioState() == 'playing') {
+		app.queue.setMuted(true, 2000);
+	}
 })
 
 
