@@ -7,8 +7,24 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'landing-page',
-      component: require('@/components/LandingPage').default
+      name: 'dashboard',
+      component: require('@/components/DashBoard').default
+    },
+    {
+      path: '/schedule',
+      name: 'schedule',
+      component: require('@/components/Schedule').default
+    },
+    {
+      path: '/schedule/:id',
+      name: 'schedule',
+      component: require('@/components/Schedule').default,
+      children: [
+        {
+          path: 'edit',
+          component: require('@/components/EditSchedule').default
+        }
+      ]
     },
     {
       path: '*',
