@@ -130,31 +130,14 @@ export default new Vuex.Store({
       deleteId(state.schedule)
     },
 
-    toggleDay (state, payload) {
-      let findEntry = (parent) => {
-        for (let child in parent) {
-          if (parent[child]._id === payload._id) {
-            if (parent[child].days && parent[child].days[payload.day]) {
-              if (parent[child].days[payload.day]) {
-                parent[child].days[payload.day] = false
-              } else {
-                parent[child].days[payload.day] = true
-              }
-            } else if (parent[child].days) {
-              parent[child].days[payload.day] = true
-            } else {
-              parent[child].days = []
-              parent[child].days[payload.day] = true
-            }
-
-            break
-          }
-
-          if (parent[child].type === 'group') { findEntry(parent[child].children) }
-        }
+    toggleDay (_, payload) {
+      const entry = this.getters.scheduleEntryById(payload._id)
+      if (entry.days && entry.days.indexOf(payload.day) > -1) {
+        entry.days.splice(entry.days.indexOf(payload.day), 1)
+      } else {
+        if (!entry.days) entry.days = []
+        entry.days.push(payload.day)
       }
-
-      findEntry(state.schedule)
     },
 
     toggleAudio (state, payload) {
@@ -292,7 +275,7 @@ export default new Vuex.Store({
       findEntry(state.schedule)
     },
 
-    reorder (state, payload) {
+    reorder (_, payload) {
       var list = this.getters.findGroupOrParent(payload.id)
       list = list.children
 
@@ -301,19 +284,25 @@ export default new Vuex.Store({
     },
 
     updateWeeks (state, payload) {
-      let findEntry = (parent) => {
-        for (let child in parent) {
-          if (parent[child]._id === payload._id) {
-            parent[child].weeks = payload.value
+      const entry = this.getters.scheduleEntryById(payload._id)
+      entry.weeks = payload.value
+      // if (!entry.weeks || typeof entry.weeks !== 'object') entry.weeks = []
 
-            break
-          }
-
-          if (parent[child].type === 'group') { findEntry(parent[child].children) }
-        }
-      }
-
-      findEntry(state.schedule)
+      // const old = [ ...entry.weeks ]
+      // for (let week of payload.value) {
+      //   let i = old.indexOf(week)
+      //   if (i < 0) { // new week added
+      //     console.log('NEW', week)
+      //     entry.weeks.push(week)
+      //   } else { // already exists
+      //     console.log('EXISTING', week)
+      //     old.splice(i, 1)
+      //   }
+      // }
+      // for (let week of old) { // deleted weeks
+      //   console.log('DELETED', week)
+      //   entry.weeks.splice(entry.weeks.indexOf(week), 1)
+      // }
     },
 
     updatePath (state, payload) {

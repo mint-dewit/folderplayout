@@ -40,7 +40,7 @@
         <b-form-checkbox
           v-for="(day, index) in ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa']"
           :key="index"
-          :checked="editObject.days[index]" @change="toggleDay(index)" :id="day" >
+          :checked="days[index]" @change="toggleDay(index)" :id="day" >
           {{ day.toUpperCase() }}
         </b-form-checkbox>
       </b-col>
@@ -131,6 +131,16 @@ export default { // @todo: init date picker
     },
     id: function () {
       return this.$route.params.id
+    },
+    weeks: function () {
+      return this.editObject.weeks.join(', ')
+    },
+    days: function () {
+      const days = []
+      for (let i = 0; i < 7; i++) {
+        days[i] = new Set(this.editObject.days || []).has(i)
+      }
+      return days
     }
   },
   data: function () {
@@ -155,7 +165,15 @@ export default { // @todo: init date picker
     },
 
     dispatchWeeks: function (value) {
-      this.$store.dispatch('setWeeks', { _id: this.id, value })
+      if (/([0-9]+)(,[0-9]+)*/.test(value)) {
+        value = value.split(',').map(o => Number(o))
+        this.$store.dispatch('setWeeks', { _id: this.id, value })
+      } else {
+        if (value === '') {
+          this.$store.dispatch('setWeeks', { _id: this.id, value: [] })
+        }
+        // @todo: invalidate.
+      }
     },
 
     dispatchPath: function (value) {
