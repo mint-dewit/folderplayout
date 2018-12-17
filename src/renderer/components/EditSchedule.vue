@@ -27,36 +27,21 @@
 
     <b-row v-if="editObject.path !== undefined">
       <h5>Path</h5>
-      <b-form-input id="name" v-model="editObject.path"></b-form-input>
+      <b-form-input id="name" :value="editObject.path" @change="dispatchPath"></b-form-input>
     </b-row>
     <b-row v-else>
       <h5>Name</h5>
-      <b-form-input id="name" v-model="editObject.name"></b-form-input>
+      <b-form-input id="name" :value="editObject.name" @change="dispatchPath"></b-form-input>
     </b-row>
 
     <b-row>
       <b-col>
         <h5>Days</h5>
-        <b-form-checkbox :checked="editObject.days[0]" @change="toggleDay" value="0" id="su" >
-          SU
-        </b-form-checkbox>
-        <b-form-checkbox :checked="editObject.days[1]" @change="toggleDay" value="1" id="mo" >
-          MO
-        </b-form-checkbox>
-        <b-form-checkbox :checked="editObject.days[2]" @change="toggleDay" value="2" id="TU" >
-          TU
-        </b-form-checkbox>
-        <b-form-checkbox :checked="editObject.days[3]" @change="toggleDay" value="3" id="WE" >
-          WE
-        </b-form-checkbox>
-        <b-form-checkbox :checked="editObject.days[4]" @change="toggleDay" value="4" id="TH" >
-          TH
-        </b-form-checkbox>
-        <b-form-checkbox :checked="editObject.days[5]" @change="toggleDay" value="5" id="fr" >
-          FR
-        </b-form-checkbox>
-        <b-form-checkbox :checked="editObject.days[6]" @change="toggleDay" value="6" id="sa" >
-          SA
+        <b-form-checkbox
+          v-for="(day, index) in ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa']"
+          :key="index"
+          :checked="editObject.days[index]" @change="toggleDay(index)" :id="day" >
+          {{ day.toUpperCase() }}
         </b-form-checkbox>
       </b-col>
     </b-row>
@@ -64,7 +49,7 @@
     <b-row>
       <b-col>
         <h5>Weeks</h5>
-        <b-form-input id="week" v-model="editObject.weeks" placeholder="e.g. 1,2,3..."></b-form-input>
+        <b-form-input id="week" :value="editObject.weeks" @change="dispatchWeeks" placeholder="e.g. 1,2,3..."></b-form-input>
         <b-form-text>Week numbers (separate with ,)</b-form-text>
       </b-col>
     </b-row>
@@ -83,8 +68,8 @@
         </b-input-group>
         
         <b-input-group>
-          <b-form-input></b-form-input>
-          <b-form-input></b-form-input>
+          <b-form-input v-model="newDate[0]"></b-form-input>
+          <b-form-input v-model="newDate[1]"></b-form-input>
           <b-input-group-append>
             <b-btn variant="primary" v-on:click.prevent="addDate()">
              Add daterange
@@ -150,7 +135,8 @@ export default { // @todo: init date picker
   },
   data: function () {
     return {
-      newTime: ''
+      newTime: '',
+      newDate: ['', '']
     }
   },
   methods: {
@@ -158,30 +144,38 @@ export default { // @todo: init date picker
       console.log(day, this.$store.getters.scheduleEntryById(this.id).days[day])
       return this.$store.getters.scheduleEntryById(this.id).days[day] || false
     },
-    toggleDay: function (ev) {
-      this.$store.commit('toggleDay', {_id: this.id, day: ev.target.value})
+    toggleDay: function (value) {
+      console.log(value)
+      this.$store.dispatch('toggleDay', {_id: this.id, day: value})
     },
 
     toggleAudio: function (ev) {
       console.log(this.id, this.editObject.audio !== false) // why doesn't this haave a fickin boolean value ffs.
-      this.$store.commit('toggleAudio', {_id: this.id})
+      this.$store.dispatch('toggleAudio', {_id: this.id})
+    },
+
+    dispatchWeeks: function (value) {
+      this.$store.dispatch('setWeeks', { _id: this.id, value })
+    },
+
+    dispatchPath: function (value) {
+      this.$store.dispatch('setPath', { _id: this.id, value })
     },
 
     addDate: function () {
-      // let dates = [$('.newdate-0')[0].value, $('.newdate-1')[0].value]
+      let dates = this.newDate
 
-      // if (dates[0] !== '' && dates[1] !== '' && dates[0] < dates[1]) {
-      //   this.$store.commit('addDateEntry', {_id: this.id, dateEntry: dates})
-      //   $('.newdate-0')[0].value = ''
-      //   $('.newdate-1')[0].value = ''
-      // }
+      if (dates[0] !== '' && dates[1] !== '' && dates[0] < dates[1]) {
+        this.$store.dispatch('addDateEntry', {_id: this.id, dateEntry: dates})
+        dates = ['', '']
+      }
     },
-    updateDate: function (ev, index, type) {
+    updateDate: function (val, index, type) {
       // where type = 0 for start and 1 for end
-      this.$store.commit('updateDateEntry', {_id: this.id, dateEntry: index, type: type, date: ev.target.value})
+      this.$store.dispatch('updateDateEntry', {_id: this.id, dateEntry: index, type: type, date: val})
     },
     removeDate: function (index) {
-      this.$store.commit('deleteDateEntry', {_id: this.id, dateEntry: index})
+      this.$store.dispatch('deleteDateEntry', {_id: this.id, dateEntry: index})
 
       // if (this.editObject.dates[index])
       //     this.editObject.dates.splice(index, 1)
@@ -189,19 +183,19 @@ export default { // @todo: init date picker
 
     addTime: function (event) {
       if (/\b(\d){2}(:){1}(\d){2}(:){1}(\d){2}\b/.test(this.newTime)) {
-        this.$store.commit('addTime', {_id: this.id, time: this.newTime})
+        this.$store.dispatch('addTime', {_id: this.id, time: this.newTime})
         this.newTime = ''
       }
     },
-    updateTime: function (ev, index) {
-      if (/\b(\d){2}(:){1}(\d){2}(:){1}(\d){2}\b/.test(ev.target.value)) {
-        this.$store.commit('updateTime', {_id: this.id, index: index, time: ev.target.value})
+    updateTime: function (val, index) {
+      if (/\b(\d){2}(:){1}(\d){2}(:){1}(\d){2}\b/.test(val)) {
+        this.$store.dispatch('updateTime', {_id: this.id, index: index, time: val})
       } else {
-        ev.target.value = this.times[index]
+        val = this.times[index]
       }
     },
     removeTime: function (index) {
-      if (this.editObject.times[index]) { this.$store.commit('deleteTime', {_id: this.id, index: index}) }
+      if (this.editObject.times[index]) { this.$store.dispatch('deleteTime', {_id: this.id, index: index}) }
     },
 
     saveObject: function () {
@@ -243,7 +237,7 @@ export default { // @todo: init date picker
           for (let child of parent.children) {
             if (child._id === _id) { // child we are editing
               // delete:
-              this.$store.commit('deleteEntry', {_id: this.id})
+              this.$store.dispatch('deleteEntry', {_id: this.id})
 
               // navigate:
               this.$router.push({path: '/schedule/' + (parent._id === 'MAIN_ENTRY' ? '' : parent._id + '/edit')})
@@ -260,7 +254,7 @@ export default { // @todo: init date picker
 
       returnAndDeleteById({children: this.$store.state.schedule, _id: 'MAIN_ENTRY'})
 
-      // this.$store.commit('deleteEntry', {_id: this.id});
+      // this.$store.dispatch('deleteEntry', {_id: this.id});
 
       //
     }

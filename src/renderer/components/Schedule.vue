@@ -17,14 +17,16 @@
         </b-row>
         <b-row>
           <b-col>
-            <b-list-group v-sortable="{onEnd: reorder}">
-              <b-list-group-item
-                v-for="(item) of renderList()"
-                :key="item._id"
-                :to="{path: '/schedule/'+item._id+'/edit'}"
-                class="collection-item schedule-entry"
-                v-bind:class="{active: isActive(item._id)}"
-              >{{ item.type }}: {{ item.name || item.path || "Untitled" }}</b-list-group-item>
+            <b-list-group>
+              <draggable @end="reorder">
+                <b-list-group-item
+                  v-for="(item) of renderList()"
+                  :key="item._id"
+                  :to="{path: '/schedule/'+item._id+'/edit'}"
+                  class="collection-item schedule-entry"
+                  v-bind:class="{active: isActive(item._id)}"
+                >{{ item.type }}: {{ item.name || item.path || "Untitled" }}</b-list-group-item>
+              </draggable>
             </b-list-group>
           </b-col>
         </b-row>
@@ -37,8 +39,11 @@
 </template>
 
 <script>
+import draggable from 'vuedraggable'
+
 export default {
   name: 'schedule',
+  components: { draggable },
   computed: {
     parentEntry: function () {
       if (this.$route.params.id === undefined) {
@@ -58,11 +63,7 @@ export default {
   },
   methods: {
     reorder: function (ev) {
-      var list = this.$store.getters.findGroupOrParent(this.$route.params.id)
-      list = list.children
-
-      const movedItem = list.splice(ev.oldIndex, 1)[0]
-      list.splice(ev.newIndex, 0, movedItem)
+      this.$store.dispatch('reorder', { id: this.$route.params.id, oldIndex: ev.oldIndex, newIndex: ev.newIndex })
       console.log(ev.newIndex)
     },
 
@@ -155,7 +156,7 @@ export default {
         this.$store.getters.findGroupOrParent(this.$route.params.id) || {}
       )._id
       // commit object
-      this.$store.commit('newEntry', { type: type, _id: parentId })
+      this.$store.dispatch('newEntry', { type: type, _id: parentId })
       // change view?
     }
   }

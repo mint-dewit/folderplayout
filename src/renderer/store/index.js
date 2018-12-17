@@ -8,47 +8,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    schedule: [{
-      '_id': '4lxkctx',
-      'type': 'group',
-      'children': [
-        {
-          '_id': 'mrfm4eg',
-          'type': 'file',
-          'path': 'Reclame slides/20180317 Reclameslides oneven no audio',
-          'audio': false,
-          'priority': 100
-        }
-      ],
-      'name': 'Reclame slides',
-      'times': [
-        '00:00:00',
-        '01:00:00',
-        '02:00:00',
-        '03:00:00',
-        '04:00:00',
-        '05:00:00',
-        '06:00:00',
-        '07:00:00',
-        '08:00:00',
-        '09:00:00',
-        '10:00:00',
-        '11:00:00',
-        '12:00:00',
-        '13:00:00',
-        '14:00:00',
-        '15:00:00',
-        '16:00:00',
-        '17:00:00',
-        '18:00:00',
-        '19:00:00',
-        '20:00:00',
-        '21:00:00',
-        '22:00:00',
-        '23:00:00'
-      ],
-      'priority': 100
-    }]
+    schedule: []
   },
   getters: {
     /**
@@ -330,6 +290,103 @@ export default new Vuex.Store({
       }
 
       findEntry(state.schedule)
+    },
+
+    reorder (state, payload) {
+      var list = this.getters.findGroupOrParent(payload.id)
+      list = list.children
+
+      const movedItem = list.splice(payload.oldIndex, 1)[0]
+      list.splice(payload.newIndex, 0, movedItem)
+    },
+
+    updateWeeks (state, payload) {
+      let findEntry = (parent) => {
+        for (let child in parent) {
+          if (parent[child]._id === payload._id) {
+            parent[child].weeks = payload.value
+
+            break
+          }
+
+          if (parent[child].type === 'group') { findEntry(parent[child].children) }
+        }
+      }
+
+      findEntry(state.schedule)
+    },
+
+    updatePath (state, payload) {
+      let findEntry = (parent) => {
+        for (let child in parent) {
+          if (parent[child]._id === payload._id) {
+            if (parent[child].type === 'group') {
+              parent[child].name = payload.value
+            } else {
+              parent[child].path = payload.value
+            }
+
+            break
+          }
+
+          if (parent[child].type === 'group') { findEntry(parent[child].children) }
+        }
+      }
+
+      findEntry(state.schedule)
+    }
+  },
+  actions: {
+    newEntry (context, payload) {
+      context.commit('newEntry', payload)
+    },
+
+    deleteEntry (context, payload) {
+      context.commit('deleteEntry', payload)
+    },
+
+    toggleDay (context, payload) {
+      context.commit('toggleDay', payload)
+    },
+
+    toggleAudio (context, payload) {
+      context.commit('toggleAudio', payload)
+    },
+
+    addTime (context, payload) {
+      context.commit('addTime', payload)
+    },
+
+    updateTime (context, payload) {
+      context.commit('updateTime', payload)
+    },
+
+    deleteTime (context, payload) {
+      context.commit('deleteTime', payload)
+    },
+
+    addDateEntry (context, payload) {
+      context.commit('addDateEntry', payload)
+    },
+
+    updateDateEntry (context, payload) {
+      context.commit('updateDateEntry', payload)
+    },
+
+    deleteDateEntry (context, payload) {
+      context.commit('deleteDateEntry', payload)
+    },
+
+    reorder (context, payload) {
+      context.commit('reorder', payload)
+    },
+
+    setWeeks (context, payload) {
+      context.commit('updateWeeks', payload)
+    },
+
+    setPath (context, payload) {
+      context.commit('updatePath', payload)
     }
   },
   plugins: [

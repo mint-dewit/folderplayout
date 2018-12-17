@@ -21,6 +21,8 @@ library.add(fas)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
+window.store = store
+
 /* eslint-disable no-new */
 new Vue({
   components: { App },
