@@ -8,7 +8,14 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    schedule: []
+    schedule: [],
+    playoutSchedule: [], // a buffer between the schedule editing and actual playout
+    playoutState: {
+      curTime: '15:22:13',
+      countdown: '00:22:10',
+      nowPlaying: 'Nothing',
+      nextUp: 'Top of the hour'
+    }
   },
   getters: {
     /**
