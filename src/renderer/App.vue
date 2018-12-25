@@ -44,10 +44,10 @@
         return this.$route.path.search('/schedule') > -1
       },
       refreshSchedule: function () {
-        // @todo
+        this.$store.dispatch('resetSchedule')
       },
       saveSchedule: function () {
-        // @todo
+        this.$store.dispatch('setPlayoutSchedule')
       }
     }
   }

@@ -330,6 +330,14 @@ export default new Vuex.Store({
       }
 
       findEntry(state.schedule)
+    },
+
+    updatePlayoutSchedule (state) {
+      state.playoutSchedule = JSON.parse(JSON.stringify(state.schedule))
+    },
+
+    resetSchedule (state) {
+      state.schedule = JSON.parse(JSON.stringify(state.playoutSchedule))
     }
   },
   actions: {
@@ -383,6 +391,14 @@ export default new Vuex.Store({
 
     setPath (context, payload) {
       context.commit('updatePath', payload)
+    },
+
+    setPlayoutSchedule (context) {
+      context.commit('updatePlayoutSchedule')
+    },
+
+    resetSchedule (context) {
+      context.commit('resetSchedule')
     }
   },
   plugins: [
