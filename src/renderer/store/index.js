@@ -11,10 +11,10 @@ export default new Vuex.Store({
     schedule: [],
     playoutSchedule: [], // a buffer between the schedule editing and actual playout
     playoutState: {
-      curTime: '15:22:13',
-      countdown: '00:22:10',
+      nextUpTime: 0,
+      startTime: 0,
       nowPlaying: 'Nothing',
-      nextUp: 'Top of the hour'
+      nextUp: ''
     }
   },
   getters: {
@@ -338,6 +338,10 @@ export default new Vuex.Store({
 
     resetSchedule (state) {
       state.schedule = JSON.parse(JSON.stringify(state.playoutSchedule))
+    },
+
+    updatePlayoutState (state, payload) {
+      state.playoutState = { ...state.playoutState, ...payload }
     }
   },
   actions: {
@@ -399,6 +403,10 @@ export default new Vuex.Store({
 
     resetSchedule (context) {
       context.commit('resetSchedule')
+    },
+
+    updatePlayoutState (context, payload) {
+      context.commit('updatePlayoutState', payload)
     }
   },
   plugins: [
