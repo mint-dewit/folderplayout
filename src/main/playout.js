@@ -38,7 +38,7 @@ conductor.init()
     Store.watch(state => state.settings.decklinkInput, () => createTimeline())
   })
 
-createTimeline()
+let timeout = setTimeout(() => createTimeline(), 0)
 
 function createTimeline () {
   const tls = []
@@ -143,6 +143,8 @@ function createTimeline () {
   timeline.push(decklink(true, last))
 
   conductor.timeline = timeline
+  clearTimeout(timeout)
+  timeout = setTimeout(() => createTimeline(), 12 * 3600 * 1000) // re-parse in 12 hours
 }
 
 setInterval(() => {
