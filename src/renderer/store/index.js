@@ -94,7 +94,7 @@ export default new Vuex.Store({
      */
     newEntry (state, payload) {
       const newEntry = {
-        _id: uid(),
+        _id: payload.newId,
         type: payload.type
       }
 
@@ -140,6 +140,7 @@ export default new Vuex.Store({
 
     toggleDay (_, payload) {
       const entry = this.getters.scheduleEntryById(payload._id)
+      if (!entry) throw new Error('Could not find entry with id ' + payload._id)
       if (entry.days && entry.days.indexOf(payload.day) > -1) {
         entry.days.splice(entry.days.indexOf(payload.day), 1)
       } else {
@@ -351,7 +352,7 @@ export default new Vuex.Store({
   },
   actions: {
     newEntry (context, payload) {
-      context.commit('newEntry', payload)
+      context.commit('newEntry', { ...payload, newId: uid() })
     },
 
     deleteEntry (context, payload) {
