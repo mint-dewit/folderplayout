@@ -1,6 +1,6 @@
 <template>
   <b-container fluid>
-    <b-row>
+    <b-row class="mt-3">
       <b-col>
         <b-card>
           <timing-component/>
@@ -9,11 +9,11 @@
 
           <status-text />
 
-          <b-row>
+          <!-- <b-row>
             <b-col cols="6" offset="6" class="text-center">
               <b-button size="lg" variant="primary">TAKE</b-button>
             </b-col>
-          </b-row>
+          </b-row> -->
         </b-card>
       </b-col>
     </b-row>
