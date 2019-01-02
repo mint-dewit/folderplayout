@@ -6,7 +6,7 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
-      path: '/',
+      path: '/dashboard',
       name: 'dashboard',
       component: require('@/components/DashBoard').default
     },
@@ -27,8 +27,13 @@ export default new Router({
       ]
     },
     {
+      path: '/settings',
+      name: 'settings',
+      component: require('@/components/Settings').default
+    },
+    {
       path: '*',
-      redirect: '/'
+      redirect: '/dashboard'
     }
   ]
 })

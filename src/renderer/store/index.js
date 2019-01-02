@@ -16,6 +16,9 @@ export default new Vuex.Store({
       startTime: 0,
       nowPlaying: 'Nothing',
       nextUp: ''
+    },
+    settings: {
+      decklinkInput: 1
     }
   },
   getters: {
@@ -348,6 +351,10 @@ export default new Vuex.Store({
 
     resetScheduleTo (state, schedule) {
       state.schedule = schedule
+    },
+
+    settingsUpdateDecklink (state, input) {
+      state.settings.decklinkInput = input
     }
   },
   actions: {
@@ -421,15 +428,17 @@ export default new Vuex.Store({
     },
 
     importSchedule (context, filename) {
-      console.log('import', filename)
       try {
         const rawData = fs.readFileSync(filename)
         const schedule = JSON.parse(rawData)
-        console.log(schedule)
         context.commit('resetScheduleTo', schedule)
       } catch (e) {
         console.error(e)
       }
+    },
+
+    settingsSetDecklink (context, input) {
+      context.commit('settingsUpdateDecklink', input)
     }
   },
   plugins: [

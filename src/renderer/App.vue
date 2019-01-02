@@ -7,8 +7,9 @@
       <b-collapse is-nav id="nav_collapse">
 
         <b-navbar-nav>
-          <b-nav-item to="/">Dashboard</b-nav-item>
+          <b-nav-item to="/dashboard">Dashboard</b-nav-item>
           <b-nav-item to="/schedule">Schedule</b-nav-item>
+          <b-nav-item to="/settings">Settings</b-nav-item>
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->

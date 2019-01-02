@@ -35,6 +35,7 @@ conductor.init()
     createTimeline()
     scanner.on('changed', () => createTimeline())
     Store.watch(state => state.playoutSchedule, () => createTimeline())
+    Store.watch(state => state.settings.decklinkInput, () => createTimeline())
   })
 
 createTimeline()
@@ -54,7 +55,7 @@ function createTimeline () {
 
   const decklink = (volume, start, end) => {
     const tlObj = {
-      id: 'bg_decklink_' + start,
+      id: `bg_decklink_${volume ? 'unmute' : 'mute'}_${start}`,
       LLayer: 'bg',
       trigger: {
         type: TriggerType.TIME_ABSOLUTE,
@@ -64,7 +65,7 @@ function createTimeline () {
       content: {
         type: 'input',
         attributes: {
-          device: 1
+          device: Number(Store.state.settings.decklinkInput)
         },
         mixer: {
           volume: volume ? 1 : 0,
