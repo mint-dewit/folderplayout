@@ -3,17 +3,19 @@
     <div class="left-panel" ref="leftPanel">
       <b-container>
         <b-row>
-          <a href="#" v-on:click.prevent="back()">
-            <h3 style="color: black; float: left">
-              <font-awesome-icon v-if="parentEntry._id != 'MAIN_ENTRY'" icon="arrow-left"></font-awesome-icon>
-              {{ parentEntry.name || 'Untitled' }}
-            </h3>
-          </a>
-          <b-dropdown text="Add">
-            <b-dropdown-item @click="createObject('file')">Clip</b-dropdown-item>
-            <b-dropdown-item @click="createObject('folder')">Folder</b-dropdown-item>
-            <b-dropdown-item @click="createObject('group')">Group</b-dropdown-item>
-          </b-dropdown>
+          <b-col>
+            <a href="#" v-on:click.prevent="back()">
+              <h3 style="color: black; float: left">
+                <font-awesome-icon v-if="parentEntry._id != 'MAIN_ENTRY'" icon="arrow-left"></font-awesome-icon>
+                {{ parentEntry.name || 'Untitled' }}
+              </h3>
+            </a>
+            <b-dropdown text="Add">
+              <b-dropdown-item @click="createObject('file')">Clip</b-dropdown-item>
+              <b-dropdown-item @click="createObject('folder')">Folder</b-dropdown-item>
+              <b-dropdown-item @click="createObject('group')">Group</b-dropdown-item>
+            </b-dropdown>
+          </b-col>
         </b-row>
         <b-row>
           <b-col>
@@ -146,8 +148,8 @@ export default {
 
       const parent = findById({ children: this.schedule, _id: 'MAIN_ENTRY' })
 
-      if (parent._id === 'MAIN_ENTRY') this.$router.push({ path: '/schedule' })
-      else this.$router.push({ path: '/schedule/' + parent._id + '/edit' })
+      if (parent && parent._id === 'MAIN_ENTRY') this.$router.push({ path: '/schedule' })
+      else if (parent) this.$router.push({ path: '/schedule/' + parent._id + '/edit' })
     },
 
     createObject: function (type) {
