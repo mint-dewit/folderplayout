@@ -1,6 +1,6 @@
 {
   "name": "folderplayout",
-  "version": "0.0.1",
+  "version": "0.1.3",
   "author": "Balte de Wit <contact@balte.nl>",
   "description": "A scheduled playout client for CasparCG.",
   "license": "MIT",
