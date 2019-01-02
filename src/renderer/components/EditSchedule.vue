@@ -63,13 +63,13 @@
               <font-awesome-icon icon="trash"></font-awesome-icon>
             </b-btn>
           </b-input-group-prepend>
-          <b-form-input v-bind:value="date[0]" v-on:change="updateDate($event, index, 0)"></b-form-input>
-          <b-form-input v-bind:value="date[1]" v-on:change="updateDate($event, index, 1)"></b-form-input>
+          <b-form-input type="date" v-bind:value="date[0]" v-on:change="updateDate($event, index, 0)"></b-form-input>
+          <b-form-input type="date" v-bind:value="date[1]" v-on:change="updateDate($event, index, 1)"></b-form-input>
         </b-input-group>
         
         <b-input-group>
-          <b-form-input v-model="newDate[0]"></b-form-input>
-          <b-form-input v-model="newDate[1]"></b-form-input>
+          <b-form-input type="date" v-model="newDate[0]"></b-form-input>
+          <b-form-input type="date" v-model="newDate[1]"></b-form-input>
           <b-input-group-append>
             <b-btn variant="primary" v-on:click.prevent="addDate()">
              Add daterange
