@@ -6,7 +6,7 @@ import { Resolver } from 'superfly-timeline'
 
 const conductor = new Conductor()
 const scanner = new MediaScanner()
-const parser = new RecurrenceParser(name => scanner.getMediaDuration(name), name => scanner.getFolderContents(name))
+const parser = new RecurrenceParser(name => scanner.getMediaDuration(name), name => scanner.getFolderContents(name), null, () => null)
 
 conductor.on('error', (...err) => console.log(...err))
 // conductor.on('debug', (...info) => console.log(...info))
@@ -35,8 +35,9 @@ conductor.init()
     createTimeline()
     scanner.on('changed', () => createTimeline())
     Store.watch(state => state.playoutSchedule, () => createTimeline())
-    Store.dispatch('updatePlayoutStatus', { nowPlaying: 'Hello, world!' })
   })
+
+createTimeline()
 
 function createTimeline () {
   const tls = []
@@ -48,7 +49,6 @@ function createTimeline () {
   while (time < stopCondition) {
     const tl = parser.getNextTimeline(new DateObj(time))
     tls.push(tl)
-    console.log(new Date(tl.start), new Date(tl.end))
     time = tl.end + 1
   }
 
@@ -141,13 +141,14 @@ function createTimeline () {
   }
   timeline.push(decklink(true, last))
 
-  console.log(timeline)
-
   conductor.timeline = timeline
 }
 
 setInterval(() => {
   const update = {}
+
+  if (!conductor.timeline) return
+
   const tl = Resolver.getState(conductor.timeline, Date.now())
 
   const curLayer = tl.LLayers['PLAYOUT'] || tl.LLayers['bg']
