@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import uid from 'uid'
 
 import { createPersistedState, createSharedMutations } from 'vuex-electron'
+import fs from 'fs'
 
 Vue.use(Vuex)
 
@@ -342,6 +343,10 @@ export default new Vuex.Store({
 
     updatePlayoutState (state, payload) {
       state.playoutState = { ...state.playoutState, ...payload }
+    },
+
+    resetScheduleTo (state, schedule) {
+      state.schedule = schedule
     }
   },
   actions: {
@@ -407,6 +412,23 @@ export default new Vuex.Store({
 
     updatePlayoutState (context, payload) {
       context.commit('updatePlayoutState', payload)
+    },
+
+    exportSchedule (context, filename) {
+      const schedule = JSON.stringify(context.state.schedule, null, 2)
+      fs.writeFile(filename, schedule)
+    },
+
+    importSchedule (context, filename) {
+      console.log('import', filename)
+      try {
+        const rawData = fs.readFileSync(filename)
+        const schedule = JSON.parse(rawData)
+        console.log(schedule)
+        context.commit('resetScheduleTo', schedule)
+      } catch (e) {
+        console.error(e)
+      }
     }
   },
   plugins: [

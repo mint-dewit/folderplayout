@@ -15,7 +15,13 @@
         <b-navbar-nav class="ml-auto">
 
           <b-navbar-nav v-if="isScheduleEditor()">
-            <b-nav-item href v-on:click.prevent="refreshSchedule" title="Refresh">
+            <b-nav-item v-on:click.prevent="exportSchedule" title="Export">
+              <font-awesome-icon icon="file-export"></font-awesome-icon>
+            </b-nav-item>
+            <b-nav-item v-on:click.prevent="importSchedule" title="Import">
+              <font-awesome-icon icon="file-import"></font-awesome-icon>
+            </b-nav-item>
+            <b-nav-item href v-on:click.prevent="refreshSchedule" title="Reset">
               <font-awesome-icon icon="redo"></font-awesome-icon>
             </b-nav-item>
             <b-nav-item href v-on:click.prevent="saveSchedule" title="Save">
@@ -32,6 +38,8 @@
 </template>
 
 <script>
+  const { dialog } = require('electron').remote
+
   export default {
     name: 'folderplayout',
     data () {
@@ -48,6 +56,17 @@
       },
       saveSchedule: function () {
         this.$store.dispatch('setPlayoutSchedule')
+      },
+      exportSchedule: function () {
+        const filename = dialog.showSaveDialog({ title: 'Export schedule', filters: [ { name: 'JSON', extensions: ['json'] } ] })
+        if (filename) this.$store.dispatch('exportSchedule', filename)
+      },
+      importSchedule: function () {
+        const filename = dialog.showOpenDialog({ title: 'Import schedule', filters: [ { name: 'JSON', extensions: ['json'] } ], properties: ['openFile'] })
+        if (filename && filename.length > 0) {
+          this.$store.dispatch('importSchedule', filename[0])
+          this.$router.push('/schedule')
+        }
       }
     }
   }
