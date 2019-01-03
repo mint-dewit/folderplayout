@@ -41,6 +41,11 @@ conductor.init()
 let timeout = setTimeout(() => createTimeline(), 0)
 
 function createTimeline () {
+  if (Store.state.playoutSchedule.length === 0) {
+    clearTimeout(timeout)
+    timeout = setTimeout(() => createTimeline(), 12 * 3600 * 1000) // re-parse in 12 hours
+    return
+  }
   const tls = []
   let time = Date.now() - 6 * 3600 * 1000 // 6 hrs ago
   let stopCondition = Date.now() + 18 * 3600 * 1000 // 18 hrs ahead
@@ -150,7 +155,7 @@ function createTimeline () {
 setInterval(() => {
   const update = {}
 
-  if (!conductor.timeline) return
+  if (!conductor.timeline || conductor.timeline.length === 0) return
 
   const tl = Resolver.getState(conductor.timeline, Date.now())
 
