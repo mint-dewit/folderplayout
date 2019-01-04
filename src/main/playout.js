@@ -100,7 +100,7 @@ function createTimeline () {
       if (i === 0) {
         obj.trigger = {
           type: TriggerType.TIME_RELATIVE,
-          value: `#${tl.timeline[0].id} - 2000`
+          value: `#${tl.timeline[0].id}.start - 2000`
         }
         obj.duration = 2000
       } else {
@@ -130,7 +130,7 @@ function createTimeline () {
           content: {
             type: 'input',
             attributes: {
-              device: 1
+              device: Number(Store.state.settings.decklinkInput)
             },
             mixer: {
               volume: 1,
