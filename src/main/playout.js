@@ -55,7 +55,7 @@ function createTimeline () {
   while (time < stopCondition) {
     const tl = parser.getNextTimeline(new DateObj(time))
     tls.push(tl)
-    time = tl.end + 1
+    time = tl.end + 1000
   }
 
   const decklink = (volume, start, end) => {
