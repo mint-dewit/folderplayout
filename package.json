@@ -59,7 +59,7 @@
     "@fortawesome/vue-fontawesome": "^0.1.3",
     "axios": "^0.18.0",
     "bootstrap-vue": "^2.0.0-rc.11",
-    "recurrence-parser": "^0.2.0",
+    "recurrence-parser": "^0.2.1",
     "superfly-timeline": "^6.0.3",
     "timeline-state-resolver": "^1.6.0",
     "uid": "^0.0.2",
