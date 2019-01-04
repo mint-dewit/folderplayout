@@ -35,7 +35,7 @@ export class MediaScanner extends EventEmitter {
         let clipName = clip.name
         clipName = clipName.replace(name, '')
         if (clipName.split('/').length === 1) {
-          res.push(clip)
+          res.push(clip.name)
         }
       }
     }
