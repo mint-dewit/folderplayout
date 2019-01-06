@@ -7185,10 +7185,10 @@ recast@~0.11.12:
     private "~0.1.5"
     source-map "~0.5.0"
 
-recurrence-parser@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/recurrence-parser/-/recurrence-parser-0.2.1.tgz#97585316b39cbfe30e5198fcb537319335e2325d"
-  integrity sha512-2gbiCob/A5jHRGOD5dFPGttjqEHsCjQFdtZ9E5z5uZeXMtlrreerHypN4l8qgdI2u5uwMheSFrPqfET7xZ7kbw==
+recurrence-parser@^0.2.4:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/recurrence-parser/-/recurrence-parser-0.2.4.tgz#b7c0b3759a905e8a49290796a26a13b5e46680a3"
+  integrity sha512-zyJyb6Yj2SENseEf7maF23F8XsnhyQgpdQBQ5sESTBRLElT7OqSNDMN85hgfqWPQhwn/4rl1f9lECsmaxXPA6A==
   dependencies:
     superfly-timeline "^6.0.3"
     tslib "^1.9.0"
