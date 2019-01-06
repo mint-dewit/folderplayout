@@ -52,10 +52,12 @@ function createTimeline () {
 
   parser.schedule = JSON.parse(JSON.stringify(Store.state.playoutSchedule))
 
-  while (time < stopCondition) {
+  let tries = 0
+  while (time < stopCondition && tries < 1000) {
     const tl = parser.getNextTimeline(new DateObj(time))
     tls.push(tl)
     time = tl.end + 1000
+    tries++
   }
 
   const decklink = (volume, start, end) => {
