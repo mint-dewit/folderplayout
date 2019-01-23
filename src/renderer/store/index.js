@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import uid from 'uid'
 
-import { createPersistedState, createSharedMutations } from 'vuex-electron'
+import storeState from './storeState'
 import fs from 'fs'
 
 Vue.use(Vuex)
@@ -442,8 +442,7 @@ export default new Vuex.Store({
     }
   },
   plugins: [
-    createPersistedState(),
-    createSharedMutations()
+    storeState()
   ],
   strict: process.env.NODE_ENV !== 'production'
 })
