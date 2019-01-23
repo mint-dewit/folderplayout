@@ -29,9 +29,7 @@ conductor.init()
     }
   })
   .then(() => {
-    return conductor.addDevice('ccg', { type: DeviceType.CASPARCG, options: { host: '127.0.0.1', port: 5250, useScheduling: false } })
-  })
-  .then(() => {
+    conductor.addDevice('ccg', { type: DeviceType.CASPARCG, options: { host: '127.0.0.1', port: 5250, useScheduling: false } })
     createTimeline()
     scanner.on('changed', () => createTimeline())
     Store.watch(state => state.playoutSchedule, () => createTimeline())
