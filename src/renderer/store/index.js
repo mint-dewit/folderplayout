@@ -431,6 +431,19 @@ export default new Vuex.Store({
       try {
         const rawData = fs.readFileSync(filename)
         const schedule = JSON.parse(rawData)
+
+        const makeWeekDaysNumbers = el => {
+          if (el.days) {
+            for (let i = 0; i < el.days.length; i++) {
+              el.days.splice(i, 1, Number(el.days[i]))
+            }
+          }
+          if (el.children) {
+            for (const child of el.children) makeWeekDaysNumbers(child)
+          }
+        }
+        for (const el of schedule) makeWeekDaysNumbers(el)
+
         context.commit('resetScheduleTo', schedule)
       } catch (e) {
         console.error(e)
