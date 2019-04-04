@@ -22,9 +22,7 @@ export default {
       this.curTime = new Date().toLocaleTimeString('nl-nl')
       let t = (this.$store.state.playoutState.nextUpTime - Date.now())
       const makeTwo = num => ('00' + Math.floor(num)).substr(-2)
-      this.countdown = `${makeTwo(t / 3600000)}:
-      ${makeTwo((t % 3600000) / 60000)}:
-      ${makeTwo((t % 60000) / 1000)}`
+      this.countdown = `${makeTwo(t / 3600000)}:${makeTwo((t % 3600000) / 60000)}:${makeTwo((t % 60000) / 1000)}`
     }, 200)
   },
   destroyed () {
@@ -32,4 +30,11 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+h1 {
+  font-variant-numeric: tabular-nums;
+}
+</style>
+
 
