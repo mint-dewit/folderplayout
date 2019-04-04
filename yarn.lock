@@ -4979,9 +4979,10 @@ isstream@0.1.x, isstream@~0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/isstream/-/isstream-0.1.2.tgz#47e63f7af55afa6f92e1500e690eb8b8529c099a"
 
-jquery@1.9.1:
-  version "1.9.1"
-  resolved "http://registry.npmjs.org/jquery/-/jquery-1.9.1.tgz#e4cd4835faaefbade535857613c0fc3ff2adaf34"
+jquery@^3.3.1:
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.3.1.tgz#958ce29e81c9790f31be7792df5d4d95fc57fbca"
+  integrity sha512-Ubldcmxp5np52/ENotGxlLe6aGMvmF4R8S6tZjsP6Knsaxd/xp3Zrh50cG93lR6nPXyUFwzN3ZSOQI0wRJNdGg==
 
 js-base64@^2.1.8, js-base64@^2.1.9:
   version "2.5.0"
@@ -7185,10 +7186,10 @@ recast@~0.11.12:
     private "~0.1.5"
     source-map "~0.5.0"
 
-recurrence-parser@^0.2.6:
-  version "0.2.6"
-  resolved "https://registry.yarnpkg.com/recurrence-parser/-/recurrence-parser-0.2.6.tgz#1dede712b1d93e5cfac7a1fd3a1347dd417b61db"
-  integrity sha512-OvRNJ03YeTZtlThE8Z/zgjkZPekjNzafTCJDxLDqb0Sq6qZyiDwoaPbPNpFd62gqXuwaexPG27it87pmISHpqg==
+recurrence-parser@^0.2.7:
+  version "0.2.7"
+  resolved "https://registry.yarnpkg.com/recurrence-parser/-/recurrence-parser-0.2.7.tgz#0d6dbfc44b6571c5765a3c397b3f43ab77a4037f"
+  integrity sha512-wD20yV7Taf9dvpFW7OmIg4QGVJigs4f3e+ZxfeIh61PxSgr4z20MRtpkAntQZTAfKJTP0NjLwtB3CAJ+knYN1w==
   dependencies:
     superfly-timeline "^6.0.3"
     tslib "^1.9.0"
