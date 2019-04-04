@@ -53,7 +53,7 @@ function createTimeline () {
   let tries = 0
   while (time < stopCondition && tries < 1000) {
     const tl = parser.getNextTimeline(new DateObj(time))
-    tls.push(tl)
+    if (tl.timeline.length > 0) tls.push(tl)
     time = tl.end + 1000
     tries++
   }
