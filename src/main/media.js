@@ -48,7 +48,7 @@ export class MediaScanner extends EventEmitter {
       const res = await axios.get('/stat/seq')
       const lastSeq = res.data.update_seq
 
-      if (lastSeq > this.lastSeq) {
+      if (lastSeq !== this.lastSeq) {
         this.lastSeq = lastSeq
         this.media = (await axios.get('/media')).data
         this.emit('changed')
