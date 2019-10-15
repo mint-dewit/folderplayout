@@ -18,7 +18,13 @@ export default new Vuex.Store({
       nextUp: ''
     },
     settings: {
-      decklinkInput: 1
+      inputType: 0,
+      decklinkInput: 1,
+      atemIp: '',
+      infochannelAtemInput: 0,
+      playoutAtemInput: 0,
+      // casparcgLauncherHost: '',
+      casparcgLauncherPort: 8005
     }
   },
   getters: {
@@ -355,6 +361,10 @@ export default new Vuex.Store({
 
     settingsUpdateDecklink (state, input) {
       state.settings.decklinkInput = input
+    },
+
+    settingsSet (state, settings) {
+      state.settings = settings
     }
   },
   actions: {
@@ -450,8 +460,13 @@ export default new Vuex.Store({
       }
     },
 
+    // deprecated:
     settingsSetDecklink (context, input) {
       context.commit('settingsUpdateDecklink', input)
+    },
+
+    settingsUpdate (context, input) {
+      context.commit('settingsSet', { ...context.state.settings, ...input })
     }
   },
   plugins: [
