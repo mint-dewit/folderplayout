@@ -8108,10 +8108,10 @@ recast@~0.11.12:
     private "~0.1.5"
     source-map "~0.5.0"
 
-recurrence-parser@^0.2.7:
-  version "0.2.7"
-  resolved "https://registry.yarnpkg.com/recurrence-parser/-/recurrence-parser-0.2.7.tgz#0d6dbfc44b6571c5765a3c397b3f43ab77a4037f"
-  integrity sha512-wD20yV7Taf9dvpFW7OmIg4QGVJigs4f3e+ZxfeIh61PxSgr4z20MRtpkAntQZTAfKJTP0NjLwtB3CAJ+knYN1w==
+recurrence-parser@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/recurrence-parser/-/recurrence-parser-0.3.0.tgz#1501d1de24b59eb83a50676c587e5bbb79160862"
+  integrity sha512-Iike04G1tUjy8NIY9NZyYXqEvq0TB4o34WFiuckeddeZGOftTVYJH83XXHHPLAgrlsQoZtk0jYsTpf0zRPo9WA==
   dependencies:
     superfly-timeline "^7.2.4"
     tslib "^1.9.0"
@@ -9165,10 +9165,9 @@ sumchecker@^1.2.0:
     debug "^2.2.0"
     es6-promise "^4.0.5"
 
-superfly-timeline@^7.2.4:
-  version "7.2.4"
-  resolved "https://registry.yarnpkg.com/superfly-timeline/-/superfly-timeline-7.2.4.tgz#ef3c401bd26124af7a7747926728018d211118fd"
-  integrity sha512-TjO979Q26vQOFZsfb5bmMt0H+sf6Un32mS4cGaz2OQoSDZYxhhFbqT/J+X/veXkIaiIjSBjGMx9q7Csm3cduXw==
+superfly-timeline@^7.2.4, "superfly-timeline@git+https://github.com/baltedewit/supertimeline#dist-20191018-01":
+  version "5.0.4"
+  resolved "git+https://github.com/baltedewit/supertimeline#10c048868f7dd7ac5c51c37ff1b8edee7ff34170"
   dependencies:
     underscore "^1.9.1"
 
@@ -9362,10 +9361,10 @@ thunky@^1.0.2:
   resolved "https://registry.yarnpkg.com/thunky/-/thunky-1.1.0.tgz#5abaf714a9405db0504732bbccd2cedd9ef9537d"
   integrity sha512-eHY7nBftgThBqOyHGVN+l8gF0BucP09fMo0oO/Lb0w1OF80dJv+lDVpXG60WMQvkcxAkNybKsrEIE3ZtKGmPrA==
 
-timeline-state-resolver@^3.12.0:
-  version "3.12.0"
-  resolved "https://registry.yarnpkg.com/timeline-state-resolver/-/timeline-state-resolver-3.12.0.tgz#af778aaa04825e73e9f4c34209accc25d5fd33cb"
-  integrity sha512-qNqtgNQB5aeWQZMTzUdNgXTPYJPqxIVNezKp/oWuP26D5qO5JXQYboWT7n+4HK9UZUIg+u9RhVvlzKlejOQq+g==
+timeline-state-resolver@^3.12.1:
+  version "3.12.1"
+  resolved "https://registry.yarnpkg.com/timeline-state-resolver/-/timeline-state-resolver-3.12.1.tgz#de93e3c79446f9d13139a6441a9fe96d323eca71"
+  integrity sha512-rErPbRJPZnLDc2yR6XQHuk8Z2lmtnCZlHHVckuDckl6ycTBvsIMinH50nk23G3dSUVug5H+L5PBqWVhS/fuhag==
   dependencies:
     "@types/request" "^2.48.1"
     "@types/sprintf-js" "^1.1.0"
