@@ -158,24 +158,13 @@ export default new Vuex.Store({
       }
     },
 
-    toggleAudio (state, payload) {
-      let findEntry = (parent) => {
-        for (let child in parent) {
-          if (parent[child]._id === payload._id) {
-            if (parent[child].audio === false) {
-              delete parent[child].audio
-            } else {
-              parent[child].audio = false
-            }
-
-            break
-          }
-
-          if (parent[child].type === 'group') { findEntry(parent[child].children) }
-        }
+    setMuted (_state, payload) {
+      const entry = this.getters.scheduleEntryById(payload._id)
+      if (payload.muted !== true) {
+        delete entry.audio
+      } else {
+        entry.audio = false
       }
-
-      findEntry(state.schedule)
     },
 
     /**
@@ -184,22 +173,13 @@ export default new Vuex.Store({
      * @param {Object} state
      * @param {Object} payload
      */
-    addTime (state, payload) {
-      let findEntry = (parent) => {
-        for (let child in parent) {
-          if (parent[child]._id === payload._id) {
-            if (parent[child].times) {
-              parent[child].times.push(payload.time)
-            } else {
-              Vue.set(parent[child], 'times', [payload.time])
-            }
-            break
-          }
-          if (parent[child].type === 'group') { findEntry(parent[child].children) }
-        }
+    addTime (_state, payload) {
+      const entry = this.getters.scheduleEntryById(payload._id)
+      if (entry.times) {
+        entry.times.push(payload.time)
+      } else {
+        Vue.set(entry, 'times', [payload.time])
       }
-
-      findEntry(state.schedule)
     },
 
     /**
@@ -210,18 +190,9 @@ export default new Vuex.Store({
      * @param {Object} state
      * @param {Object} payload
      */
-    updateTime (state, payload) {
-      let findEntry = (parent) => {
-        for (let child in parent) {
-          if (parent[child]._id === payload._id) {
-            parent[child].times[payload.index] = payload.time
-            break
-          }
-          if (parent[child].type === 'group') { findEntry(parent[child].children) }
-        }
-      }
-
-      findEntry(state.schedule)
+    updateTime (_state, payload) {
+      const entry = this.getters.scheduleEntryById(payload._id)
+      entry.times[payload.index] = payload.time
     },
 
     /**
@@ -231,66 +202,30 @@ export default new Vuex.Store({
      * @param {Object} state The store state
      * @param {Object} payload An object with parameters
      */
-    deleteTime (state, payload) {
-      let findEntry = (parent) => {
-        for (let child in parent) {
-          if (parent[child]._id === payload._id) {
-            parent[child].times.splice(payload.index, 1)
-            if (parent[child].times.length === 0) { Vue.set(parent[child], 'times', null) }
-            break
-          }
-          if (parent[child].type === 'group') { findEntry(parent[child].children) }
-        }
-      }
-
-      findEntry(state.schedule)
+    deleteTime (_state, payload) {
+      const entry = this.getters.scheduleEntryById(payload._id)
+      entry.times.splice(payload.index, 1)
+      if (entry.times.length === 0) { Vue.set(entry, 'times', null) }
     },
 
-    addDateEntry (state, payload) {
-      let findEntry = (parent) => {
-        for (let child in parent) {
-          if (parent[child]._id === payload._id) {
-            if (parent[child].dates) {
-              parent[child].dates.push(payload.dateEntry)
-            } else {
-              Vue.set(parent[child], 'dates', [payload.dateEntry])
-            }
-            break
-          }
-          if (parent[child].type === 'group') { findEntry(parent[child].children) }
-        }
+    addDateEntry (_state, payload) {
+      const entry = this.getters.scheduleEntryById(payload._id)
+      if (entry.dates) {
+        entry.dates.push(payload.dateEntry)
+      } else {
+        Vue.set(entry, 'dates', [ payload.dateEntry ])
       }
-
-      findEntry(state.schedule)
     },
 
-    updateDateEntry (state, payload) {
-      let findIn = (group) => {
-        for (let child of group) {
-          if (child._id === payload._id) {
-            child.dates[payload.dateEntry][payload.type] = payload.date
-          } else if (child.children) {
-            findIn(child.children)
-          }
-        }
-      }
-
-      findIn(state.schedule)
+    updateDateEntry (_state, payload) {
+      const entry = this.getters.scheduleEntryById(payload._id)
+      entry.dates[payload.dateEntry][payload.type] = payload.date
     },
 
-    deleteDateEntry (state, payload) {
-      let findEntry = (parent) => {
-        for (let child in parent) {
-          if (parent[child]._id === payload._id) {
-            parent[child].dates.splice(payload.index, 1)
-            if (parent[child].dates.length === 0) { Vue.set(parent[child], 'dates', null) }
-            break
-          }
-          if (parent[child].type === 'group') { findEntry(parent[child].children) }
-        }
-      }
-
-      findEntry(state.schedule)
+    deleteDateEntry (_state, payload) {
+      const entry = this.getters.scheduleEntryById(payload._id)
+      entry.dates.splice(payload.index, 1)
+      if (entry.dates.length === 0) { Vue.set(entry, 'dates', null) }
     },
 
     reorder (_, payload) {
@@ -323,24 +258,30 @@ export default new Vuex.Store({
       // }
     },
 
-    updatePath (state, payload) {
-      let findEntry = (parent) => {
-        for (let child in parent) {
-          if (parent[child]._id === payload._id) {
-            if (parent[child].type === 'group') {
-              parent[child].name = payload.value
-            } else {
-              parent[child].path = payload.value
-            }
-
-            break
-          }
-
-          if (parent[child].type === 'group') { findEntry(parent[child].children) }
-        }
+    updatePath (_state, payload) {
+      const entry = this.getters.scheduleEntryById(payload._id)
+      if (entry.type === 'group') {
+        entry.name = payload.value
+      } else {
+        entry.path = payload.value
       }
+      // let findEntry = (parent) => {
+      //   for (let child in parent) {
+      //     if (parent[child]._id === payload._id) {
+      //       if (parent[child].type === 'group') {
+      //         parent[child].name = payload.value
+      //       } else {
+      //         parent[child].path = payload.value
+      //       }
 
-      findEntry(state.schedule)
+      //       break
+      //     }
+
+      //     if (parent[child].type === 'group') { findEntry(parent[child].children) }
+      //   }
+      // }
+
+      // findEntry(state.schedule)
     },
 
     updatePlayoutSchedule (state) {
@@ -380,8 +321,8 @@ export default new Vuex.Store({
       context.commit('toggleDay', payload)
     },
 
-    toggleAudio (context, payload) {
-      context.commit('toggleAudio', payload)
+    setMuted (context, payload) {
+      context.commit('setMuted', payload)
     },
 
     addTime (context, payload) {

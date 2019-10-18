@@ -17,9 +17,9 @@
       </b-col>
     </b-row>
 
-    <b-row v-if="editObject.type !== 'group'">
+    <b-row v-if="editObject && editObject.type !== 'group'">
       <b-col>
-        <b-form-checkbox :checked="editObject.audio === false" @change="toggleAudio" id="audio">
+        <b-form-checkbox v-model="muted" id="audio">
           Muted
         </b-form-checkbox>
       </b-col>
@@ -49,7 +49,7 @@
     <b-row>
       <b-col>
         <h5>Weeks</h5>
-        <b-form-input id="week" :value="editObject.weeks" @change="dispatchWeeks" placeholder="e.g. 1,2,3..."></b-form-input>
+        <b-form-input id="week" :value="weeks" @change="dispatchWeeks" placeholder="e.g. 1,2,3..."></b-form-input>
         <b-form-text>Week numbers (separate with ,)</b-form-text>
       </b-col>
     </b-row>
@@ -133,7 +133,11 @@ export default { // @todo: init date picker
       return this.$route.params.id
     },
     weeks: function () {
-      return this.editObject.weeks.join(', ')
+      if (this.editObject && this.editObject.weeks) {
+        return this.editObject.weeks.join(', ')
+      } else {
+        return ''
+      }
     },
     days: function () {
       const days = []
@@ -145,6 +149,7 @@ export default { // @todo: init date picker
   },
   data: function () {
     return {
+      muted: false,
       newTime: '',
       newDate: ['', '']
     }
@@ -157,11 +162,6 @@ export default { // @todo: init date picker
     toggleDay: function (value) {
       console.log(value)
       this.$store.dispatch('toggleDay', {_id: this.id, day: value})
-    },
-
-    toggleAudio: function (ev) {
-      console.log(this.id, this.editObject.audio !== false) // why doesn't this haave a fickin boolean value ffs.
-      this.$store.dispatch('toggleAudio', {_id: this.id})
     },
 
     dispatchWeeks: function (value) {
@@ -275,6 +275,15 @@ export default { // @todo: init date picker
       // this.$store.dispatch('deleteEntry', {_id: this.id});
 
       //
+    }
+  },
+  watch: {
+    muted: function (val) {
+      const oldVal = this.editObject.audio === false
+      if (oldVal !== val) this.$store.dispatch('setMuted', { _id: this.id, muted: val })
+    },
+    editObject: function (v) {
+      this.muted = v.audio === false
     }
   }
 }
