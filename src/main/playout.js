@@ -275,6 +275,14 @@ function updateState () {
   const tl = Resolver.getState(resolved, Date.now())
   const playout = Resolver.resolveAllStates(resolved).state['PLAYOUT']
   if (!playout) {
+    if (Store.state.playoutState.nextUpTime > 0) {
+      update.nowPlaying = 'Nothing'
+      update.nextUp = 'Nothing'
+      update.nextUpTime = 0
+
+      Store.dispatch('updatePlayoutState', update)
+    }
+
     setTimeout(() => updateState(), 1000)
     return
   }

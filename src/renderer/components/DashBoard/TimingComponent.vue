@@ -20,9 +20,13 @@ export default {
   created () {
     this.interval = setInterval(() => {
       this.curTime = new Date().toLocaleTimeString('nl-nl')
-      let t = (this.$store.state.playoutState.nextUpTime - Date.now())
-      const makeTwo = num => ('00' + Math.floor(num)).substr(-2)
-      this.countdown = `${makeTwo(t / 3600000)}:${makeTwo((t % 3600000) / 60000)}:${makeTwo((t % 60000) / 1000)}`
+      if (this.$store.state.playoutState.nextUpTime > 0) {
+        let t = (this.$store.state.playoutState.nextUpTime - Date.now())
+        const makeTwo = num => ('00' + Math.floor(num)).substr(-2)
+        this.countdown = `${makeTwo(t / 3600000)}:${makeTwo((t % 3600000) / 60000)}:${makeTwo((t % 60000) / 1000)}`
+      } else {
+        this.countdown = '--:--:--'
+      }
     }, 200)
   },
   destroyed () {

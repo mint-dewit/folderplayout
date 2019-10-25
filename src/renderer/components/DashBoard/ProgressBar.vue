@@ -15,7 +15,11 @@ export default {
   },
   created () {
     this.interval = setInterval(() => {
-      this.progress = 100 * (Date.now() - this.$store.state.playoutState.startTime) / (this.$store.state.playoutState.nextUpTime - this.$store.state.playoutState.startTime)
+      if (Date.now() > this.$store.state.playoutState.nextUpTime) {
+        this.progress = 0
+      } else {
+        this.progress = 100 * (Date.now() - this.$store.state.playoutState.startTime) / (this.$store.state.playoutState.nextUpTime - this.$store.state.playoutState.startTime)
+      }
     }, 200)
   },
   destroyed () {
