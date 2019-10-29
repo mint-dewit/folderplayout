@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { EventEmitter } from 'events'
 
-const SCANNER_URL = 'http://192.168.1.111:8000/' // hushhh
+const SCANNER_URL = 'http://127.0.0.1:8000/'
 axios.defaults.baseURL = SCANNER_URL
 
 export class MediaScanner extends EventEmitter {
