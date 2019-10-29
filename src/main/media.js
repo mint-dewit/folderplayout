@@ -2,15 +2,16 @@ import axios from 'axios'
 import { EventEmitter } from 'events'
 
 const SCANNER_URL = 'http://127.0.0.1:8000/'
-axios.defaults.baseURL = SCANNER_URL
 
 export class MediaScanner extends EventEmitter {
   lastSeq = 0
   media = []
   connected = false
+  url = '127.0.0.1'
 
-  constructor () {
+  constructor (url) {
     super()
+    axios.defaults.baseURL = url || SCANNER_URL
     this._updateMedia()
   }
 

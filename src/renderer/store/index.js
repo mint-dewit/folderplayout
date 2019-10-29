@@ -23,8 +23,9 @@ export default new Vuex.Store({
       atemIp: '',
       infochannelAtemInput: 0,
       playoutAtemInput: 0,
-      // casparcgLauncherHost: '',
-      casparcgLauncherPort: 8005
+      mediaScannerURL: 'http://127.0.0.1:8000/',
+      casparcgHost: '127.0.0.1',
+      casparcgPort: 5250
     }
   },
   getters: {

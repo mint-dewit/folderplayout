@@ -28,14 +28,31 @@
             <b-col sm="9"><b-form-input id="decklink-input" type="number" min="1" v-model="playoutAtemInput"></b-form-input></b-col>
           </b-row>
 
-          <!-- <b-row>
-            <b-col sm="3"><label for="launcher-host">CasparCG Launcher API Host:</label></b-col>
-            <b-col sm="9"><b-form-input id="launcher-host" type="text" v-model="casparcgLauncherHost"></b-form-input></b-col>
-          </b-row> -->
-          <!-- <b-row>
-            <b-col sm="3"><label for="launcher-port">CasparCG Launcher API Port:</label></b-col>
-            <b-col sm="9"><b-form-input id="launcher-port" type="number" v-model="casparcgLauncherPort"></b-form-input></b-col>
-          </b-row> -->
+          <b-row>
+            <b-col sm="3">
+              <label for="casparcg-host">CasparCG Host:</label>
+            </b-col>
+            <b-col sm="9">
+              <b-form-input id="casparcg-host" type="text" v-model="casparcgHost"></b-form-input>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col sm="3">
+              <label for="casparcg-port">CasparCG Port:</label>
+            </b-col>
+            <b-col sm="9">
+              <b-form-input id="casparcg-port" type="number" v-model="casparcgPort"></b-form-input>
+            </b-col>
+          </b-row>
+
+          <b-row>
+            <b-col sm="3">
+              <label for="scanner-host">Mediascanner URL:</label>
+            </b-col>
+            <b-col sm="9">
+              <b-form-input id="scanner-host" type="text" v-model="mediaScannerURL"></b-form-input>
+            </b-col>
+          </b-row>
         </b-card>
       </b-col>
     </b-row>
@@ -85,20 +102,28 @@ export default {
         this.$store.dispatch('settingsUpdate', { playoutAtemInput: val })
       }
     },
-    // casparcgLauncherHost: {
-    //   get () {
-    //     return this.$store.state.settings.casparcgLauncherHost
-    //   },
-    //   set (val) {
-    //     this.$store.dispatch('settingsUpdate', { casparcgLauncherHost: val })
-    //   }
-    // },
-    casparcgLauncherPort: {
+    mediaScannerURL: {
       get () {
-        return this.$store.state.settings.casparcgLauncherPort
+        return this.$store.state.settings.mediaScannerURL
       },
       set (val) {
-        this.$store.dispatch('settingsUpdate', { casparcgLauncherPort: val })
+        this.$store.dispatch('settingsUpdate', { mediaScannerURL: val })
+      }
+    },
+    casparcgHost: {
+      get () {
+        return this.$store.state.settings.casparcgHost
+      },
+      set (val) {
+        this.$store.dispatch('settingsUpdate', { casparcgHost: val })
+      }
+    },
+    casparcgPort: {
+      get () {
+        return this.$store.state.settings.casparcgPort
+      },
+      set (val) {
+        this.$store.dispatch('settingsUpdate', { casparcgPort: val })
       }
     }
   },

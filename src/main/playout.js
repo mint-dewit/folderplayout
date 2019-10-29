@@ -6,7 +6,7 @@ import { Resolver } from 'superfly-timeline'
 import { MappingAtemType } from 'timeline-state-resolver/dist/types/src'
 
 const conductor = new Conductor()
-const scanner = new MediaScanner()
+const scanner = new MediaScanner(Store.state.settings.mediaScannerURL)
 const parser = new RecurrenceParser(name => scanner.getMediaDuration(name), name => scanner.getFolderContents(name), null, () => null)
 
 conductor.on('error', (...err) => console.log(...err))
@@ -16,7 +16,7 @@ conductor.init()
     updateMappingsAndDevices()
   })
   .then(() => {
-    conductor.addDevice('ccg', { type: DeviceType.CASPARCG, options: { host: '127.0.0.1', port: 5250, useScheduling: false } })
+    conductor.addDevice('ccg', { type: DeviceType.CASPARCG, options: { host: Store.state.settings.casparcgHost || '127.0.0.1', port: Store.state.settings.casparcgPort || 5250, useScheduling: false } })
     createTimeline()
     scanner.on('changed', () => createTimeline())
     Store.watch(state => state.playoutSchedule, () => createTimeline())
