@@ -34,6 +34,15 @@
       <b-form-input id="name" :value="editObject.name" @change="dispatchPath"></b-form-input>
     </b-row>
 
+    <b-row v-if="editObject.type === 'input'">
+      <h5>Input</h5>
+      <b-form-input id="input" :value="editObject.input" @change="dispatchInput"></b-form-input>
+    </b-row>
+    <b-row v-if="editObject.type === 'input'">
+      <h5>Duration</h5>
+      <b-form-input id="duration" :value="editObject.duration" @change="dispatchDuration"></b-form-input>
+    </b-row>
+
     <b-row>
       <b-col>
         <h5>Days</h5>
@@ -178,6 +187,14 @@ export default { // @todo: init date picker
 
     dispatchPath: function (value) {
       this.$store.dispatch('setPath', { _id: this.id, value })
+    },
+
+    dispatchInput: function (value) {
+      this.$store.dispatch('setInput', { _id: this.id, value })
+    },
+
+    dispatchDuration: function (value) {
+      this.$store.dispatch('setDuration', { _id: this.id, value })
     },
 
     addDate: function () {

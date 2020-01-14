@@ -108,7 +108,14 @@ export default new Vuex.Store({
         type: payload.type
       }
 
-      if (payload.type === 'group') { newEntry.children = [] } else { newEntry.path = '' }
+      if (payload.type === 'group') {
+        newEntry.children = []
+      } else if (payload.type === 'input') {
+        newEntry.input = 1
+        newEntry.duration = 60
+      } else {
+        newEntry.path = ''
+      }
 
       let findParent = (parent) => {
         for (let item of parent) {
@@ -285,6 +292,20 @@ export default new Vuex.Store({
       // findEntry(state.schedule)
     },
 
+    updateInput (_state, payload) {
+      const entry = this.getters.scheduleEntryById(payload._id)
+      if (entry.type === 'input') {
+        entry.input = payload.value
+      }
+    },
+
+    updateDuration (_state, payload) {
+      const entry = this.getters.scheduleEntryById(payload._id)
+      if (entry.type === 'input') {
+        entry.duration = payload.value
+      }
+    },
+
     updatePlayoutSchedule (state) {
       state.playoutSchedule = JSON.parse(JSON.stringify(state.schedule))
     },
@@ -360,6 +381,14 @@ export default new Vuex.Store({
 
     setPath (context, payload) {
       context.commit('updatePath', payload)
+    },
+
+    setInput (context, payload) {
+      context.commit('updateInput', payload)
+    },
+
+    setDuration (context, payload) {
+      context.commit('updateDuration', payload)
     },
 
     setPlayoutSchedule (context) {

@@ -220,6 +220,7 @@ function updateMappingsAndDevices () {
         layer: 10
       }
     }
+    parser.liveMode = 'casparcg'
   } else if (settings.inputType === 1) { // atem input
     if (conductor.mapping['bg']) {
       delete conductor.mapping['bg']
@@ -256,6 +257,7 @@ function updateMappingsAndDevices () {
         index: settings.playoutAtemInput
       }
     }
+    parser.liveMode = 'atem'
   }
 }
 
@@ -305,7 +307,7 @@ function updateState () {
     update.startTime = previousPlayout
   }
   if (firstPlayoutObj && firstPlayoutObj.content.file !== Store.state.playoutState.nextUp) {
-    update.nextUp = firstPlayoutObj.content.file
+    update.nextUp = firstPlayoutObj.content.file || 'Live Input'
   }
 
   if (Object.keys(update).length > 0) Store.dispatch('updatePlayoutState', update)
