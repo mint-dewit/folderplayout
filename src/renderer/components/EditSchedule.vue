@@ -36,11 +36,11 @@
 
     <b-row v-if="editObject.type === 'input'">
       <h5>Input</h5>
-      <b-form-input id="input" :value="editObject.input" @change="dispatchInput"></b-form-input>
+      <b-form-input id="input" :value="editObject.input" @change="dispatchInput" type="number"></b-form-input>
     </b-row>
     <b-row v-if="editObject.type === 'input'">
       <h5>Duration</h5>
-      <b-form-input id="duration" :value="editObject.duration" @change="dispatchDuration"></b-form-input>
+      <b-form-input id="duration" :value="editObject.duration" @change="dispatchDuration" type="number"></b-form-input>
     </b-row>
 
     <b-row>
@@ -190,11 +190,11 @@ export default { // @todo: init date picker
     },
 
     dispatchInput: function (value) {
-      this.$store.dispatch('setInput', { _id: this.id, value })
+      this.$store.dispatch('setInput', { _id: this.id, value: Number(value) })
     },
 
     dispatchDuration: function (value) {
-      this.$store.dispatch('setDuration', { _id: this.id, value })
+      this.$store.dispatch('setDuration', { _id: this.id, value: Number(value) })
     },
 
     addDate: function () {

@@ -70,6 +70,7 @@ function createTimeline () {
     timeline.push(...tl.timeline)
     timeline.push(...bg)
   }
+  console.log(timeline)
 
   timeline.push({
     id: 'decklink_bg',
