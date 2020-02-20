@@ -250,6 +250,16 @@ function updateMappingsAndDevices () {
         index: settings.infochannelAtemInput
       }
     }
+    for (let i = 1; i <= settings.playoutAtemChannels; i++) {
+      if (!conductor.mapping['ATEM_AUDIO_' + i]) {
+        conductor.mapping['ATEM_AUDIO_' + i] = {
+          device: DeviceType.ATEM,
+          deviceId: 'atem',
+          mappingType: MappingAtemType.AudioChannel,
+          index: i
+        }
+      }
+    }
     if (!conductor.mapping['ATEM_AUDIO_PGM']) {
       conductor.mapping['ATEM_AUDIO_PGM'] = {
         device: DeviceType.ATEM,
