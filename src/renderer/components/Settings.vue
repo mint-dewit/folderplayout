@@ -27,6 +27,10 @@
             <b-col sm="3"><label for="decklink-input">Playout Atem Input:</label></b-col>
             <b-col sm="9"><b-form-input id="decklink-input" type="number" min="1" v-model="playoutAtemInput"></b-form-input></b-col>
           </b-row>
+          <b-row v-if="inputType === 1">
+            <b-col sm="3"><label for="decklink-channels">Atem Audio Channels:</label></b-col>
+            <b-col sm="9"><b-form-input id="decklink-channels" type="number" min="0" v-model="playoutAtemChannels"></b-form-input></b-col>
+          </b-row>
 
           <b-row>
             <b-col sm="3">
@@ -100,6 +104,15 @@ export default {
       },
       set (val) {
         this.$store.dispatch('settingsUpdate', { playoutAtemInput: val })
+      }
+    },
+    playoutAtemChannels: {
+      get () {
+        return this.$store.state.settings.playoutAtemChannels
+      },
+      set (val) {
+        console.log('chans', val)
+        this.$store.dispatch('settingsUpdate', { playoutAtemChannels: Number(val) })
       }
     },
     mediaScannerURL: {
