@@ -2,7 +2,6 @@ import { RecurrenceParser, DateObj } from 'recurrence-parser'
 import { Conductor, DeviceType } from 'timeline-state-resolver'
 import Store from '../renderer/store/index'
 import { MediaScanner } from './media'
-import { Resolver } from 'superfly-timeline'
 import { MappingAtemType } from 'timeline-state-resolver/dist/types/src'
 
 const conductor = new Conductor()
@@ -27,6 +26,7 @@ conductor.init()
   })
 
 let timeout = setTimeout(() => createTimeline(), 0)
+// let curReadableTimeline = []
 
 function createTimeline () {
   const settings = Store.state.settings
@@ -45,9 +45,11 @@ function createTimeline () {
   }
 
   const timeline = []
+  const readableTimeline = []
   for (const tl of tls) {
     const bg = []
     for (let i = 0; i < tl.timeline.length; i++) { // make bg objects
+      if (tl.timeline[i].content.deviceType === 2) continue // no bg objects for atem
       const obj = JSON.parse(JSON.stringify(tl.timeline[i]))
       delete obj.classes
       obj.id += '_bg'
@@ -69,10 +71,14 @@ function createTimeline () {
 
     timeline.push(...tl.timeline)
     timeline.push(...bg)
+    readableTimeline.push(...tl.readableTimeline)
   }
   console.log(timeline)
+  readableTimeline.sort((a, b) => a.start - b.start)
+  // curReadableTimeline = readableTimeline
+  Store.dispatch('setReadableTimeline', readableTimeline)
 
-  timeline.push({
+  timeline.push({ // decklink bg = always on
     id: 'decklink_bg',
     layer: 'bg',
     enable: {
@@ -90,7 +96,7 @@ function createTimeline () {
         }
       }
     },
-    keyframes: [
+    keyframes: [ // mute during unmuted playout
       {
         id: 'decklink_bg_kf0',
         enable: {
@@ -107,7 +113,7 @@ function createTimeline () {
       }
     ]
   },
-  {
+  { // atem input for infochannel = always enabled
     id: 'atem_input_infochannel',
     layer: 'ATEM',
     enable: {
@@ -123,11 +129,11 @@ function createTimeline () {
       }
     }
   },
-  {
+  { // atem input for playout = enabled while playout
     id: 'atem_input_playout',
     layer: 'ATEM',
     enable: {
-      while: '.PLAYOUT + 160' // 160 preroll on atem, let's hope this works
+      while: '.PLAYOUT + 160' // 160 preroll on atem
     },
     priority: 2,
     content: {
@@ -139,7 +145,7 @@ function createTimeline () {
       }
     }
   },
-  {
+  { // atem audio from infochannel = outside of playout
     id: 'atem_audio_bg',
     layer: 'ATEM_AUDIO_BG',
     enable: {
@@ -154,7 +160,7 @@ function createTimeline () {
       }
     }
   },
-  {
+  { // atem audio from infochannel = when muted
     id: 'atem_audio_muted',
     layer: 'ATEM_AUDIO_BG',
     enable: {
@@ -169,7 +175,7 @@ function createTimeline () {
       }
     }
   },
-  {
+  { // atem audio from playout = when unmuted playout
     id: 'atem_audio_playout',
     layer: 'ATEM_AUDIO_PGM',
     enable: {
@@ -188,7 +194,7 @@ function createTimeline () {
   conductor.timeline = timeline
   clearTimeout(timeout)
   timeout = setTimeout(() => createTimeline(), 12 * 3600 * 1000) // re-parse in 12 hours
-  updateState()
+  // updateState()
 }
 
 function updateMappingsAndDevices () {
@@ -272,58 +278,54 @@ function updateMappingsAndDevices () {
   }
 }
 
-let timeoutNextup
+// let timeoutNextup
 
-function updateState () {
-  const update = {}
+// function updateState () {
+//   const update = {}
 
-  if (timeoutNextup) clearTimeout(timeoutNextup)
+//   if (timeoutNextup) clearTimeout(timeoutNextup)
 
-  if (!conductor.timeline || conductor.timeline.length === 0) {
-    setTimeout(() => updateState(), 1000)
-    return
-  }
+//   if (!conductor.timeline || conductor.timeline.length === 0) {
+//     setTimeout(() => updateState(), 1000)
+//     return
+//   }
 
-  const resolved = Resolver.resolveTimeline(conductor.timeline, { time: Date.now(), limitCount: 100, limitTime: 200 })
-  const tl = Resolver.getState(resolved, Date.now())
-  const playout = Resolver.resolveAllStates(resolved).state['PLAYOUT']
-  if (!playout) {
-    if (Store.state.playoutState.nextUpTime > 0) {
-      update.nowPlaying = 'Nothing'
-      update.nextUp = 'Nothing'
-      update.nextUpTime = 0
+//   const previous = curReadableTimeline.reverse().find(o => {
+//     return (o.start + o.end) < Date.now()
+//   })
+//   curReadableTimeline.reverse() // reverse back
+//   const curPlaying = curReadableTimeline.find((o) => {
+//     return o.start < Date.now() && (o.start + o.duration) > Date.now()
+//   })
+//   const next = curReadableTimeline.find(o => {
+//     return o.start > Date.now()
+//   })
 
-      Store.dispatch('updatePlayoutState', update)
-    }
+//   // if (curPlaying) console.log(`CurPlaying: ${curPlaying.label} - ${new Date(curPlaying.start)}`)
+//   // if (next) console.log(`Next: ${next.label} - ${new Date(next.start)}`)
 
-    setTimeout(() => updateState(), 1000)
-    return
-  }
-  const firstPlayout = Object.keys(playout).find(t => t > Date.now())
-  const previousPlayout = Object.keys(playout).reverse().find(t => t <= Date.now())
-  const firstPlayoutObj = playout[firstPlayout] ? playout[firstPlayout][0] : undefined
+//   const firstPlayout = next ? next.start : 0
+//   const previousPlayout = previous ? previous.start : 0
 
-  const curLayer = tl.layers['PLAYOUT'] || tl.layers['bg']
+//   if (!curPlaying && Store.state.playoutState.nowPlaying !== 'Nothing') {
+//     update.nowPlaying = 'Nothing'
+//   } else if (curPlaying && curPlaying.label !== Store.state.playoutState.nowPlaying) {
+//     update.nowPlaying = curPlaying.label
+//   }
 
-  if (curLayer && curLayer.layer === 'bg' && Store.state.playoutState.nowPlaying !== 'Nothing') {
-    update.nowPlaying = 'Nothing'
-  } else if (curLayer && curLayer.layer === 'PLAYOUT' && curLayer.content.file !== Store.state.playoutState.nowPlaying) {
-    update.nowPlaying = curLayer.content.file
-  }
+//   if (firstPlayout && firstPlayout !== Store.state.playoutState.nextUpTime) {
+//     update.nextUpTime = firstPlayout
+//   }
+//   if (previousPlayout && previousPlayout !== Store.state.playoutState.startTime) {
+//     update.startTime = previousPlayout
+//   }
+//   if (next && next.label !== Store.state.playoutState.nextUp) {
+//     update.nextUp = next.label
+//   }
 
-  if (firstPlayout && firstPlayout !== Store.state.playoutState.nextUpTime) {
-    update.nextUpTime = firstPlayout
-  }
-  if (previousPlayout && previousPlayout !== Store.state.playoutState.startTime) {
-    update.startTime = previousPlayout
-  }
-  if (firstPlayoutObj && firstPlayoutObj.content.file !== Store.state.playoutState.nextUp) {
-    update.nextUp = firstPlayoutObj.content.file || 'Live Input'
-  }
+//   timeoutNextup = setTimeout(() => updateState(), Math.max((firstPlayout - Date.now()) / 2, 200))
 
-  if (Object.keys(update).length > 0) Store.dispatch('updatePlayoutState', update)
+//   if (Object.keys(update).length > 0) Store.dispatch('updatePlayoutState', update)
+// }
 
-  timeoutNextup = setTimeout(() => updateState(), Math.max((firstPlayout - Date.now()) / 2, 200))
-}
-
-updateState()
+// updateState()

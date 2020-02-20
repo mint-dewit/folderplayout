@@ -11,18 +11,14 @@ export default new Vuex.Store({
   state: {
     schedule: [],
     playoutSchedule: [], // a buffer between the schedule editing and actual playout
-    playoutState: {
-      nextUpTime: 0,
-      startTime: 0,
-      nowPlaying: 'Nothing',
-      nextUp: ''
-    },
+    readableTimeline: [],
     settings: {
       inputType: 0,
       decklinkInput: 1,
       atemIp: '',
       infochannelAtemInput: 0,
       playoutAtemInput: 0,
+      playoutAtemChannels: 0,
       mediaScannerURL: 'http://127.0.0.1:8000/',
       casparcgHost: '127.0.0.1',
       casparcgPort: 5250
@@ -94,6 +90,55 @@ export default new Vuex.Store({
       }
 
       return findById({ children: state.schedule, _id: 'MAIN_ENTRY', name: 'Schedule' })
+    },
+
+    getPlayoutState: (state) => t => {
+      const playoutState = {
+        nextUpTime: 0,
+        startTime: 0,
+        nowPlaying: 'Nothing',
+        nextUp: 'Unknown / nothing'
+      }
+
+      if (!state.readableTimeline || state.readableTimeline.length === 0) {
+        console.log('empty')
+        return playoutState
+      }
+
+      const readableTimeline = JSON.parse(JSON.stringify(state.readableTimeline))
+
+      const previous = readableTimeline.reverse().find(o => {
+        return (o.start + o.end) < t
+      })
+      readableTimeline.reverse() // reverse back
+      const curPlaying = readableTimeline.find((o) => {
+        return o.start < t && (o.start + o.duration) > t
+      })
+      const next = readableTimeline.find(o => {
+        return o.start > t
+      })
+
+      // if (curPlaying) console.log(`CurPlaying: ${curPlaying.label} - ${new Date(curPlaying.start)}`)
+      // if (next) console.log(`Next: ${next.label} - ${new Date(next.start)}`)
+
+      const firstPlayout = next ? next.start : 0
+      const previousPlayout = previous ? previous.start : 0
+
+      if (curPlaying && curPlaying.label) {
+        playoutState.nowPlaying = curPlaying.label
+      }
+
+      if (firstPlayout) {
+        playoutState.nextUpTime = firstPlayout
+      }
+      if (previousPlayout) {
+        playoutState.startTime = previousPlayout
+      }
+      if (next) {
+        playoutState.nextUp = next.label
+      }
+
+      return playoutState
     }
   },
   mutations: {
@@ -328,6 +373,10 @@ export default new Vuex.Store({
 
     settingsSet (state, settings) {
       state.settings = settings
+    },
+
+    setReadableTimeline (state, tl) {
+      state.readableTimeline = tl
     }
   },
   actions: {
@@ -438,6 +487,10 @@ export default new Vuex.Store({
 
     settingsUpdate (context, input) {
       context.commit('settingsSet', { ...context.state.settings, ...input })
+    },
+
+    setReadableTimeline (context, tl) {
+      context.commit('setReadableTimeline', tl)
     }
   },
   plugins: [

@@ -11,22 +11,29 @@
 
 <script>
 export default {
+  computed: {
+    playoutState () {
+      return this.$store.getters.playoutState(t)
+    }
+  },
   data () {
     return {
       curTime: new Date().toLocaleTimeString('nl-nl'),
-      countdown: '00:00:00'
+      countdown: '00:00:00',
+      t: Date.now()
     }
   },
   created () {
     this.interval = setInterval(() => {
       this.curTime = new Date().toLocaleTimeString('nl-nl')
-      if (this.$store.state.playoutState.nextUpTime > 0) {
-        let t = (this.$store.state.playoutState.nextUpTime - Date.now())
+      if (this.playoutState.nextUpTime > 0) {
+        let t = (this.playoutState.nextUpTime - Date.now())
         const makeTwo = num => ('00' + Math.floor(num)).substr(-2)
         this.countdown = `${makeTwo(t / 3600000)}:${makeTwo((t % 3600000) / 60000)}:${makeTwo((t % 60000) / 1000)}`
       } else {
         this.countdown = '--:--:--'
       }
+      t = Date.now()
     }, 200)
   },
   destroyed () {
