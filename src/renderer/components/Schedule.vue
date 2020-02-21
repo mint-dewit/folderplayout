@@ -12,6 +12,7 @@
             </a>
             <b-dropdown text="Add">
               <b-dropdown-item @click="createObject('file')">Clip</b-dropdown-item>
+              <b-dropdown-item @click="createObject('input')">Input</b-dropdown-item>
               <b-dropdown-item @click="createObject('folder')">Folder</b-dropdown-item>
               <b-dropdown-item @click="createObject('group')">Group</b-dropdown-item>
             </b-dropdown>
