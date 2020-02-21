@@ -108,7 +108,7 @@ export default new Vuex.Store({
       const readableTimeline = JSON.parse(JSON.stringify(state.readableTimeline))
 
       const previous = readableTimeline.reverse().find(o => {
-        return (o.start + o.end) < t
+        return (o.start + o.duration) < t
       })
       readableTimeline.reverse() // reverse back
       const curPlaying = readableTimeline.find((o) => {
@@ -122,16 +122,23 @@ export default new Vuex.Store({
       // if (next) console.log(`Next: ${next.label} - ${new Date(next.start)}`)
 
       const firstPlayout = next ? next.start : 0
-      const previousPlayout = previous ? previous.start : 0
-
-      if (curPlaying && curPlaying.label) {
-        playoutState.nowPlaying = curPlaying.label
-      }
+      const previousPlayout = previous ? previous.start + previous.duration : 0
 
       if (firstPlayout) {
         playoutState.nextUpTime = firstPlayout
       }
-      if (previousPlayout) {
+
+      if (curPlaying) {
+        playoutState.startTime = curPlaying.start
+        if (curPlaying.label) playoutState.nowPlaying = curPlaying.label
+
+        const end = curPlaying.start + curPlaying.duration
+
+        if (!firstPlayout || end < firstPlayout) {
+          playoutState.nextUp = 'Nothing'
+          playoutState.nextUpTime = end
+        }
+      } else if (previousPlayout) {
         playoutState.startTime = previousPlayout
       }
       if (next) {

@@ -24,6 +24,23 @@
           <h2>Playlist</h2>
 
           <b-list-group>
+            <b-list-group-item>
+              <b-row>
+                <b-col sm="1">
+                  Date
+                </b-col>
+                <b-col sm="2">
+                  Time
+                </b-col>
+                <b-col>
+                  Item
+                </b-col>
+                <b-col sm="2">
+                  Duration
+                </b-col>
+              </b-row>
+            </b-list-group-item>
+
             <b-list-group-item v-for="(item, i) in playlist" :key="i">
               <b-row>
                 <b-col sm="1">
@@ -56,7 +73,7 @@ export default {
   components: { TimingComponent, ProgressBar, StatusText },
   computed: {
     playlist () {
-      return this.$store.state.readableTimeline.map(o => {
+      return this.$store.state.readableTimeline.filter(o => o.start > this.t).map(o => {
         const start = new Date(o.start)
         o.date = start.getDate() + '/' + (start.getMonth() + 1)
         o.time = start.toLocaleTimeString(undefined, { hour12: false })
@@ -81,8 +98,8 @@ export default {
   },
   created () {
     this.interval = setInterval(() => {
-      t = Date.now()
-    }, 1000)
+      this.t = Date.now()
+    }, 500)
   },
   destroyed () {
     clearInterval(this.interval)
