@@ -179,7 +179,7 @@ function createTimeline () {
     id: 'atem_audio_playout',
     layer: 'ATEM_AUDIO_PGM',
     enable: {
-      while: '.PLAYOUT & !.MUTED'
+      while: '.PLAYOUT & !.MUTED & !.LIVE_AUDIO'
     },
     content: {
       deviceType: 2,
