@@ -13,7 +13,7 @@
 export default {
   computed: {
     playoutState () {
-      return this.$store.getters.playoutState(t)
+      return this.$store.getters.getPlayoutState(this.t)
     }
   },
   data () {
@@ -33,7 +33,7 @@ export default {
       } else {
         this.countdown = '--:--:--'
       }
-      t = Date.now()
+      this.t = Date.now()
     }, 200)
   },
   destroyed () {

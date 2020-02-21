@@ -10,7 +10,7 @@
 export default {
   computed: {
     playoutState () {
-      return this.$store.getters.playoutState(this.t)
+      return this.$store.getters.getPlayoutState(this.t)
     }
   },
   data () {
@@ -26,7 +26,7 @@ export default {
       } else {
         this.progress = 100 * (Date.now() - this.playoutState.startTime) / (this.playoutState.nextUpTime - this.playoutState.startTime)
       }
-      t = Date.now()
+      this.t = Date.now()
     }, 200)
   },
   destroyed () {

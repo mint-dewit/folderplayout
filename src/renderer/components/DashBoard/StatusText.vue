@@ -13,7 +13,7 @@
 export default {
   computed: {
     playoutState () {
-      return this.$store.getters.playoutState(this.t)
+      return this.$store.getters.getPlayoutState(this.t)
     }
   },
   data () {
@@ -23,7 +23,7 @@ export default {
   },
   created () {
     this.interval = setInterval(() => {
-      t = Date.now()
+      this.t = Date.now()
     }, 1000)
   },
   destroyed () {
