@@ -1,0 +1,52 @@
+<html>
+    <body>
+        <h1>Oops</h1>
+        <p>
+            Unfortunately the app has fatally crashed and could not recover. Please proceed as follows.
+
+            <ul>
+                <li>Export the schedule and save it to a safe place</li>
+                <li>Factory reset the app, this will clear ALL settings and your schedule</li>
+                <li>Restart the app</li>
+                <li>Import the schedule from where you saved it</li>
+                <li>Before saving the schedule in the app, please double check EVERY entry on possible flaws</li>
+                <li>If the issues persist, contact the author with a copy of your schedule backup</li>
+            </ul>
+        </p>
+
+        <p>
+            Use the following button to backup your schedule: <button onClick="exportSettings()">Export schedule</button>
+        </p>
+
+        <p>
+            Then use the following button to reset the app: <button onClick="reset()">Factory reset</button>
+        </p>
+
+        <script>
+            const {dialog} = require('electron').remote;
+            const fs = require('fs');
+
+            const options = {
+                title: "Save file",
+                defaultPath : "backup",
+                buttonLabel : "Save",
+
+            filters :[
+                    {name: 'json', extensions: ['json',]}
+                ]
+            }
+
+            function exportSettings () {
+                const state = JSON.parse(window.localStorage.getItem('state'))
+
+                dialog.showSaveDialog( options, (filename) => {
+                    fs.writeFileSync(filename, JSON.stringify(state.schedule, undefined, 4), 'utf-8');
+                })
+            }
+
+            function reset () {
+                window.localStorage.setItem('state', '{}')
+            }
+        </script>
+    </body>
+</html>

@@ -11,9 +11,25 @@ if (process.env.NODE_ENV !== 'development') {
 }
 
 let mainWindow
+let fatalErrorWindow
 const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080`
   : `file://${__dirname}/index.html`
+const fatalErrWinURL = process.env.NODE_ENV === 'development'
+  ? `http://localhost:9080/static/fatal.html`
+  : `file://${__dirname}/static/fatal.html`
+
+  // const fatalErrWinURL = `file://${__dirname}/static/fatal.html`
+
+function createFatalErrorWindow () {
+  fatalErrorWindow = new BrowserWindow({
+    height: 563,
+    useContentSize: true,
+    width: 400
+  })
+
+  fatalErrorWindow.loadURL(fatalErrWinURL)
+}
 
 function createWindow () {
   /**
@@ -26,6 +42,16 @@ function createWindow () {
   })
 
   mainWindow.loadURL(winURL)
+
+  mainWindow.webContents.on('crashed', () => {
+    console.log('mainWindow crashed')
+    createFatalErrorWindow()
+    mainWindow.close()
+  })
+
+  mainWindow.webContents.on('before-input-event', (_e, input) => {
+    console.log(input)
+  })
 
   mainWindow.on('closed', () => {
     mainWindow = null

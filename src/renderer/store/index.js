@@ -101,7 +101,6 @@ export default new Vuex.Store({
       }
 
       if (!state.readableTimeline || state.readableTimeline.length === 0) {
-        console.log('empty')
         return playoutState
       }
 

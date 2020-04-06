@@ -6,7 +6,7 @@
  */
 import merge from 'deepmerge'
 
-const STORAGE_KEY = 'state'
+const STORAGE_KEY = 'state' // Note - change this in assets/fatal.html too
 
 class PersistedState {
   constructor (options, store) {
