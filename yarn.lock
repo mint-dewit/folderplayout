@@ -7997,12 +7997,12 @@ recast@~0.11.12:
     private "~0.1.5"
     source-map "~0.5.0"
 
-recurrence-parser@^0.4.1:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/recurrence-parser/-/recurrence-parser-0.4.1.tgz#4194d982384648a831a4e9fdcdfa8c56d543ca90"
-  integrity sha512-+vW0L54/JHn2yzasF0HrrgVCJGR2h+NA1ldcNZvkpfWj4auhTYUk9LdODemXoMHTLz5E0uf/V4ejNWkpFFMDUw==
+recurrence-parser@^0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/recurrence-parser/-/recurrence-parser-0.4.2.tgz#974541d9ec7478aca925f5583c7db06dac2bc8ba"
+  integrity sha512-o8xwf4EsUvDQq8C/VRVHC1sToKd0KDrqQtTgfeOD5+JRO6pPdwGGh/3/B9xfDQY6EU5zakzaP0TJT1/IQxY9WA==
   dependencies:
-    superfly-timeline "^7.2.4"
+    superfly-timeline "^7.3.1"
     tslib "^1.9.0"
 
 redent@^1.0.0:
@@ -9099,18 +9099,10 @@ sumchecker@^1.2.0:
     debug "^2.2.0"
     es6-promise "^4.0.5"
 
-superfly-timeline@^7.2.4, "superfly-timeline@git+https://github.com/baltedewit/supertimeline#dist-20191018-01":
+superfly-timeline@^7.3.1, "superfly-timeline@git+https://github.com/baltedewit/supertimeline#dist-20191018-01":
   version "5.0.4"
   resolved "git+https://github.com/baltedewit/supertimeline#10c048868f7dd7ac5c51c37ff1b8edee7ff34170"
   dependencies:
-    underscore "^1.9.1"
-
-superfly-timeline@^7.3.1:
-  version "7.3.1"
-  resolved "https://registry.yarnpkg.com/superfly-timeline/-/superfly-timeline-7.3.1.tgz#6a7aa04a768be198c677ad8a1e8eacdfc603c8fb"
-  integrity sha512-xmg9GgVNWUPA48MGwrwicwP/yEw7gZSl5nVnwcf3p50GZx1ChOxa5rCJQyTpPoyKG8pqwXKZkbJsq2ylk2p4iQ==
-  dependencies:
-    tslib "^1.10.0"
     underscore "^1.9.1"
 
 supports-color@6.1.0, supports-color@^6.1.0:
