@@ -17,6 +17,7 @@
     "pack:main": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.main.config.js",
     "pack:renderer": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.renderer.config.js",
     "electron-rebuild": "electron-rebuild",
+    "install:electron-builder": "electron-builder install-app-deps",
     "postinstall": "yarn lint:fix && electron-rebuild"
   },
   "build": {
@@ -74,6 +75,10 @@
     "vuedraggable": "^2.17.0",
     "vuex": "^3.0.1",
     "vuex-electron": "^1.0.0"
+  },
+  "optionalDependencies": {
+    "bufferutil": "any",
+    "utf-8-validate": "any"
   },
   "devDependencies": {
     "ajv": "^6.5.0",
