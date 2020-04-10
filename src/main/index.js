@@ -49,9 +49,13 @@ function createWindow () {
     mainWindow.close()
   })
 
-  mainWindow.webContents.on('before-input-event', (_e, input) => {
-    console.log(input)
-  })
+  if (process.env.NODE_ENV !== 'development') {
+    mainWindow.webContents.on('before-input-event', (_e, input) => {
+      if (input.type === 'keyDown' && input.key === 'I' && input.shift && input.control) {
+        mainWindow.webContents.openDevTools()
+      }
+    })
+  }
 
   mainWindow.on('closed', () => {
     mainWindow = null
