@@ -22,7 +22,8 @@ export default new Vuex.Store({
       mediaScannerURL: 'http://127.0.0.1:8000/',
       casparcgHost: '127.0.0.1',
       casparcgPort: 5250
-    }
+    },
+    deviceState: {}
   },
   getters: {
     /**
@@ -383,6 +384,13 @@ export default new Vuex.Store({
 
     setReadableTimeline (state, tl) {
       state.readableTimeline = tl
+    },
+
+    setDeviceState (state, payload) {
+      Vue.set(state.deviceState, payload.device, payload.status)
+    },
+    removeDeviceState (state, device) {
+      Vue.delete(state.deviceState, device)
     }
   },
   actions: {
@@ -497,6 +505,14 @@ export default new Vuex.Store({
 
     setReadableTimeline (context, tl) {
       context.commit('setReadableTimeline', tl)
+    },
+
+    setDeviceState ({ commit }, payload) {
+      commit('setDeviceState', payload)
+    },
+
+    removeDeviceState ({ commit }, device) {
+      commit('removeDeviceState', device)
     }
   },
   plugins: [

@@ -9,13 +9,14 @@ const scanner = new MediaScanner(Store.state.settings.mediaScannerURL)
 const parser = new RecurrenceParser(name => scanner.getMediaDuration(name), name => scanner.getFolderContents(name), null, () => null)
 
 conductor.on('error', (...err) => console.log(...err))
+scanner.on('connectionChanged', status => updateDeviceStatus('mediascanner', status))
+updateDeviceStatus('mediascanner', scanner.getStatus())
 
 conductor.init()
   .then(() => {
     updateMappingsAndDevices()
   })
   .then(() => {
-    conductor.addDevice('ccg', { type: DeviceType.CASPARCG, options: { host: Store.state.settings.casparcgHost || '127.0.0.1', port: Store.state.settings.casparcgPort || 5250, useScheduling: false } })
     createTimeline()
     scanner.on('changed', () => createTimeline())
     Store.watch(state => state.playoutSchedule, () => createTimeline())
@@ -197,8 +198,41 @@ function createTimeline () {
   // updateState()
 }
 
+async function addCasparCG (settings) {
+  updateDeviceStatus('ccg', { statusCode: 4, messages: ['CasparCG Disconnected'] }) // hack to make it get a status before first connection
+
+  const device = await conductor.addDevice('ccg', {
+    type: DeviceType.CASPARCG,
+    options: {
+      host: settings.casparcgHost || '127.0.0.1',
+      port: settings.casparcgPort || 5250,
+      useScheduling: false
+    }
+  })
+
+  updateDeviceStatus('ccg', await device.device.getStatus())
+  await device.device.on('connectionChanged', (deviceStatus) => updateDeviceStatus('ccg', deviceStatus))
+}
+
+async function addAtem (settings) {
+  updateDeviceStatus('atem', { statusCode: 4, messages: ['Atem Disconnected'] }) // hack to make it get a status before first connection
+
+  const device = await conductor.addDevice('atem', {
+    type: DeviceType.ATEM,
+    options: {
+      host: settings.atemIp
+    }
+  })
+  updateDeviceStatus('atem', await device.device.getStatus())
+  await device.device.on('connectionChanged', (deviceStatus) => updateDeviceStatus('atem', deviceStatus))
+}
+
 function updateMappingsAndDevices () {
   const settings = Store.state.settings
+
+  if (!conductor.getDevice('ccg')) {
+    addCasparCG(settings)
+  }
 
   if (!conductor.mapping['PLAYOUT']) {
     conductor.mapping['PLAYOUT'] = {
@@ -218,6 +252,7 @@ function updateMappingsAndDevices () {
     }
     if (conductor.getDevice('atem')) {
       conductor.removeDevice('atem')
+      Store.dispatch('removeDeviceState', 'atem')
     }
     if (!conductor.mapping['bg']) {
       conductor.mapping['bg'] = {
@@ -233,12 +268,7 @@ function updateMappingsAndDevices () {
       delete conductor.mapping['bg']
     }
     if (!conductor.getDevice('atem')) {
-      conductor.addDevice('atem', {
-        type: DeviceType.ATEM,
-        options: {
-          host: settings.atemIp
-        }
-      })
+      addAtem(settings)
     }
     if (!conductor.mapping['ATEM']) {
       conductor.mapping['ATEM'] = {
@@ -276,6 +306,10 @@ function updateMappingsAndDevices () {
     }
     parser.liveMode = 'atem'
   }
+}
+
+function updateDeviceStatus (deviceName, deviceStatus) {
+  Store.dispatch('setDeviceState', { device: deviceName, status: deviceStatus })
 }
 
 // let timeoutNextup

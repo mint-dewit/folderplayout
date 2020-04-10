@@ -44,6 +44,20 @@ export class MediaScanner extends EventEmitter {
     return res
   }
 
+  getStatus () {
+    if (this.connected) {
+      return {
+        statusCode: 1, // good
+        messages: []
+      }
+    } else {
+      return {
+        statusCode: 4, // bad
+        messages: ['Unable to connect to media manager at ' + axios.defaults.baseURL]
+      }
+    }
+  }
+
   async _updateMedia () {
     try {
       const res = await axios.get('/stat/seq')
@@ -58,11 +72,13 @@ export class MediaScanner extends EventEmitter {
       if (!this.connected) {
         this.connected = true
         this.emit('connected')
+        this.emit('connectionChanged', this.getStatus())
       }
     } catch (e) {
       if (this.connected) {
         this.connected = false
         this.emit('disconnected')
+        this.emit('connectionChanged', this.getStatus())
       }
     }
 

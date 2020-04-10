@@ -21,43 +21,19 @@
     <b-row class="mt-3">
       <b-col>
         <b-card>
+          <h2>Device Status</h2>
+
+          <b-table :items="deviceStates" />
+        </b-card>
+      </b-col>
+    </b-row>
+
+    <b-row class="mt-3">
+      <b-col>
+        <b-card>
           <h2>Playlist</h2>
 
-          <b-list-group>
-            <b-list-group-item>
-              <b-row>
-                <b-col sm="1">
-                  Date
-                </b-col>
-                <b-col sm="2">
-                  Time
-                </b-col>
-                <b-col>
-                  Item
-                </b-col>
-                <b-col sm="2">
-                  Duration
-                </b-col>
-              </b-row>
-            </b-list-group-item>
-
-            <b-list-group-item v-for="(item, i) in playlist" :key="i">
-              <b-row>
-                <b-col sm="1">
-                  {{ item.date }}
-                </b-col>
-                <b-col sm="2">
-                  {{ item.time }}
-                </b-col>
-                <b-col>
-                   {{ item.label }}
-                </b-col>
-                <b-col sm="2">
-                  {{ toTimeString(item.duration) }}
-                </b-col>
-              </b-row>
-            </b-list-group-item>
-          </b-list-group>
+          <b-table :items="playlist" />
         </b-card>
       </b-col>
     </b-row>
@@ -75,10 +51,56 @@ export default {
     playlist () {
       return this.$store.state.readableTimeline.filter(o => o.start > this.t).map(o => {
         const start = new Date(o.start)
-        o.date = start.getDate() + '/' + (start.getMonth() + 1)
-        o.time = start.toLocaleTimeString(undefined, { hour12: false })
-        return o
+        // o.date = start.getDate() + '/' + (start.getMonth() + 1)
+        // o.time = start.toLocaleTimeString(undefined, { hour12: false })
+        // return o
+
+        return {
+          date: start.getDate() + '/' + (start.getMonth() + 1),
+          time: start.toLocaleTimeString(undefined, { hour12: false }),
+          item: o.label,
+          duration: this.toTimeString(o.duration)
+        }
       })
+    },
+    deviceStates () {
+      const codes = {
+        0: 'Unknown',
+        1: 'Good',
+        2: 'Minor Warning',
+        3: 'Major Warning',
+        4: 'Bad',
+        5: 'Fatal'
+      }
+      const names = {
+        'atem': 'Blackmagic Atem Switcher',
+        'ccg': 'CasparCG',
+        'mediascanner': 'CasparCG Media Scanner'
+      }
+      const states = []
+
+      for (const device in this.$store.state.deviceState) {
+        const state = this.$store.state.deviceState[device]
+        const displayState = {
+          name: names[device] || device,
+          status: codes[state.statusCode],
+          messages: state.messages && state.messages.join(', ')
+        }
+
+        if (state.statusCode >= 2) {
+          displayState._cellVariants = {
+            status: 'warning'
+          }
+        }
+
+        if (state.statusCode >= 4) {
+          displayState._rowVariant = 'danger'
+        }
+
+        states.push(displayState)
+      }
+
+      return states
     }
   },
   methods: {
@@ -89,6 +111,15 @@ export default {
       const pad = (t) => ('00' + t).substr(-2)
 
       return `${pad(h)}:${pad(m)}:${pad(s)}`
+    },
+    deviceNameFromId (name) {
+      const names = {
+        'atem': 'Blackmagic Atem Switcher',
+        'ccg': 'CasparCG',
+        'mediascanner': 'CasparCG Media Scanner'
+      }
+
+      return names[name] || name
     }
   },
   data () {
