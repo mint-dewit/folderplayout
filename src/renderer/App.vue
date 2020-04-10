@@ -57,6 +57,10 @@
       },
       saveSchedule: function () {
         this.$store.dispatch('setPlayoutSchedule')
+        this.$bvToast.toast('Saved schedule', {
+          variant: 'success',
+          toaster: 'b-toaster-bottom-right'
+        })
       },
       exportSchedule: function () {
         const filename = dialog.showSaveDialog({ title: 'Export schedule', filters: [ { name: 'JSON', extensions: ['json'] } ] })
