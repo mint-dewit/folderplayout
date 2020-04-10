@@ -2,21 +2,29 @@
 
 > A scheduled playout client for CasparCG.
 
+![Folderplayout](https://raw.githubusercontent.com/baltedewit/folderplayout/images/folderplayout.PNG)
+
+Folderplayout is based on hierarchical schedule. You can combine groups, folders, clips and live inputs and use dates, weeks, days and hours to schedule these. When nothing from the schedule is playing, an external input is played. For example an info channel.
+
+Folderplayout can be ran on solely CasparCG using Decklink inputs or using CasparCG for playout and Blackmagic Atem's for switching inputs.
+
+Internally, folderplayout builds on SuperFly's Timeline project and the Timeline State Resolver from NRK's Sofie project.
+
 #### Build Setup
 
 ``` bash
 # install dependencies
-npm install
+yarn install
 
 # serve with hot reload at localhost:9080
-npm run dev
+yarn run dev
 
 # build electron application for production
-npm run build
+yarn run build
 
 
 # lint all JS/Vue component files in `src/`
-npm run lint
+yarn run lint
 
 ```
 
