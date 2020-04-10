@@ -279,7 +279,10 @@ export default new Vuex.Store({
 
     updateDateEntry (_state, payload) {
       const entry = this.getters.scheduleEntryById(payload._id)
-      entry.dates[payload.dateEntry][payload.type] = payload.date
+      const dates = entry.dates[payload.dateEntry]
+      dates[payload.type] = payload.date
+
+      Vue.set(entry.dates, payload.dateEntry, dates)
     },
 
     deleteDateEntry (_state, payload) {

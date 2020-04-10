@@ -72,13 +72,17 @@
               <font-awesome-icon icon="trash"></font-awesome-icon>
             </b-btn>
           </b-input-group-prepend>
-          <b-form-input type="date" v-bind:value="date[0]" v-on:change="updateDate($event, index, 0)"></b-form-input>
-          <b-form-input type="date" v-bind:value="date[1]" v-on:change="updateDate($event, index, 1)"></b-form-input>
+          <!-- <b-form-input type="date" v-bind:value="date[0]" v-on:change="updateDate($event, index, 0)"></b-form-input>
+          <b-form-input type="date" v-bind:value="date[1]" v-on:change="updateDate($event, index, 1)"></b-form-input> -->
+          <b-form-datepicker type="date" v-bind:value="date[0]" :state="date | validDates" v-on:input="updateDate($event, index, 0)"></b-form-datepicker>
+          <b-form-datepicker type="date" v-bind:value="date[1]" :state="date | validDates" v-on:input="updateDate($event, index, 1)"></b-form-datepicker>
         </b-input-group>
         
         <b-input-group>
-          <b-form-input type="date" v-model="newDate[0]"></b-form-input>
-          <b-form-input type="date" v-model="newDate[1]"></b-form-input>
+          <!-- <b-form-input type="date" v-model="newDate[0]"></b-form-input> -->
+          <b-form-datepicker v-model="newDate[0]" :state="newDate | validDatesExplicit"></b-form-datepicker>
+          <!-- <b-form-input type="date" v-model="newDate[1]"></b-form-input> -->
+          <b-form-datepicker v-model="newDate[1]" :state="newDate | validDatesExplicit"></b-form-datepicker>
           <b-input-group-append>
             <b-btn variant="primary" v-on:click.prevent="addDate()">
              Add daterange
@@ -91,7 +95,7 @@
     <b-row>
       <b-col>
         <h5>Times</h5>
-        <b-input-group v-for="(time, index) in times" v-bind:key="time, index">
+        <b-input-group v-for="(time, index) in times" v-bind:key="index">
           <b-input-group-prepend>
             <b-btn @click.prevent="removeTime(index)">
               <font-awesome-icon icon="trash"></font-awesome-icon>
@@ -128,6 +132,7 @@ export default { // @todo: init date picker
   name: 'edit-schedule',
   computed: {
     editObject: function () {
+      console.log('this is new editobj')
       let obj = this.$store.getters.scheduleEntryById(this.id)
       if (!obj.days) { obj.days = [] }
       return obj
@@ -215,6 +220,17 @@ export default { // @todo: init date picker
       // if (this.editObject.dates[index])
       //     this.editObject.dates.splice(index, 1)
     },
+    isDateValid (dates, explicit = false) {
+      const valid = dates[0] <= dates[1]
+
+      if (!valid) {
+        return false
+      } else if (explicit) {
+        return true
+      } else {
+        return undefined
+      }
+    },
 
     addTime: function (event) {
       if (/\b(\d){2}(:){1}(\d){2}(:){1}(\d){2}\b/.test(this.newTime)) {
@@ -292,6 +308,23 @@ export default { // @todo: init date picker
       // this.$store.dispatch('deleteEntry', {_id: this.id});
 
       //
+    }
+  },
+  filters: {
+    validDates (dates) {
+      if (!dates[0] || !dates[1]) return false
+      const valid = dates[0] <= dates[1]
+
+      if (!valid) {
+        return false
+      } else {
+        return undefined
+      }
+    },
+    validDatesExplicit (dates) {
+      if (!dates[0] && !dates[1]) return undefined
+
+      return dates[0] <= dates[1]
     }
   },
   watch: {
