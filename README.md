@@ -2,7 +2,7 @@
 
 > A scheduled playout client for CasparCG.
 
-![Folderplayout](https://raw.githubusercontent.com/baltedewit/folderplayout/images/folderplayout.PNG)
+![Folderplayout](https://raw.githubusercontent.com/baltedewit/folderplayout/v3/images/folderplayout.PNG)
 
 Folderplayout is based on hierarchical schedule. You can combine groups, folders, clips and live inputs and use dates, weeks, days and hours to schedule these. When nothing from the schedule is playing, an external input is played. For example an info channel.
 
