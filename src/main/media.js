@@ -4,18 +4,19 @@ import { EventEmitter } from 'events'
 const SCANNER_URL = 'http://127.0.0.1:8000/'
 
 export class MediaScanner extends EventEmitter {
-  lastSeq = 0
-  media = []
-  connected = false
-  url = '127.0.0.1'
-
-  constructor (url) {
+  constructor(url) {
     super()
+
+    this.lastSeq = 0
+    this.media = []
+    this.connected = false
+    this.url = '127.0.0.1'
+
     axios.defaults.baseURL = url || SCANNER_URL
     this._updateMedia()
   }
 
-  getMediaDuration (name) {
+  getMediaDuration(name) {
     for (const clip of this.media) {
       if (clip.name === name.toUpperCase()) {
         return clip.format.duration
@@ -25,7 +26,7 @@ export class MediaScanner extends EventEmitter {
     return 0
   }
 
-  getFolderContents (name) {
+  getFolderContents(name) {
     const res = []
 
     if (name.substr(-1) !== '/') name += '/'
@@ -44,21 +45,21 @@ export class MediaScanner extends EventEmitter {
     return res
   }
 
-  getStatus () {
+  getStatus() {
     if (this.connected) {
       return {
         statusCode: 1, // good
-        messages: []
+        messages: [],
       }
     } else {
       return {
         statusCode: 4, // bad
-        messages: ['Unable to connect to media manager at ' + axios.defaults.baseURL]
+        messages: ['Unable to connect to media manager at ' + axios.defaults.baseURL],
       }
     }
   }
 
-  async _updateMedia () {
+  async _updateMedia() {
     try {
       const res = await axios.get('/stat/seq')
       const lastSeq = res.data.update_seq

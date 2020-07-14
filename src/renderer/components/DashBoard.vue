@@ -3,7 +3,7 @@
     <b-row class="mt-3">
       <b-col>
         <b-card>
-          <timing-component/>
+          <timing-component />
 
           <progress-bar />
 
@@ -41,41 +41,43 @@
 </template>
 
 <script>
-import TimingComponent from '@/components/DashBoard/TimingComponent'
-import ProgressBar from '@/components/DashBoard/ProgressBar'
-import StatusText from '@/components/DashBoard/StatusText'
+import TimingComponent from './DashBoard/TimingComponent'
+import ProgressBar from './DashBoard/ProgressBar'
+import StatusText from './DashBoard/StatusText'
 
 export default {
   components: { TimingComponent, ProgressBar, StatusText },
   computed: {
-    playlist () {
-      return this.$store.state.readableTimeline.filter(o => o.start > this.t).map(o => {
-        const start = new Date(o.start)
-        // o.date = start.getDate() + '/' + (start.getMonth() + 1)
-        // o.time = start.toLocaleTimeString(undefined, { hour12: false })
-        // return o
+    playlist() {
+      return this.$store.state.readableTimeline
+        .filter((o) => o.start > this.t)
+        .map((o) => {
+          const start = new Date(o.start)
+          // o.date = start.getDate() + '/' + (start.getMonth() + 1)
+          // o.time = start.toLocaleTimeString(undefined, { hour12: false })
+          // return o
 
-        return {
-          date: start.getDate() + '/' + (start.getMonth() + 1),
-          time: start.toLocaleTimeString(undefined, { hour12: false }),
-          item: o.label,
-          duration: this.toTimeString(o.duration)
-        }
-      })
+          return {
+            date: start.getDate() + '/' + (start.getMonth() + 1),
+            time: start.toLocaleTimeString(undefined, { hour12: false }),
+            item: o.label,
+            duration: this.toTimeString(o.duration),
+          }
+        })
     },
-    deviceStates () {
+    deviceStates() {
       const codes = {
         0: 'Unknown',
         1: 'Good',
         2: 'Minor Warning',
         3: 'Major Warning',
         4: 'Bad',
-        5: 'Fatal'
+        5: 'Fatal',
       }
       const names = {
-        'atem': 'Blackmagic Atem Switcher',
-        'ccg': 'CasparCG',
-        'mediascanner': 'CasparCG Media Scanner'
+        atem: 'Blackmagic Atem Switcher',
+        ccg: 'CasparCG',
+        mediascanner: 'CasparCG Media Scanner',
       }
       const states = []
 
@@ -84,12 +86,12 @@ export default {
         const displayState = {
           name: names[device] || device,
           status: codes[state.statusCode],
-          messages: state.messages && state.messages.join(', ')
+          messages: state.messages && state.messages.join(', '),
         }
 
         if (state.statusCode >= 2) {
           displayState._cellVariants = {
-            status: 'warning'
+            status: 'warning',
           }
         }
 
@@ -101,10 +103,10 @@ export default {
       }
 
       return states
-    }
+    },
   },
   methods: {
-    toTimeString (ms) {
+    toTimeString(ms) {
       const s = Math.round(ms / 1000) % 60
       const m = Math.floor(ms / (60 * 1000)) % 60
       const h = Math.floor(ms / (60 * 60 * 1000)) % 60
@@ -112,28 +114,28 @@ export default {
 
       return `${pad(h)}:${pad(m)}:${pad(s)}`
     },
-    deviceNameFromId (name) {
+    deviceNameFromId(name) {
       const names = {
-        'atem': 'Blackmagic Atem Switcher',
-        'ccg': 'CasparCG',
-        'mediascanner': 'CasparCG Media Scanner'
+        atem: 'Blackmagic Atem Switcher',
+        ccg: 'CasparCG',
+        mediascanner: 'CasparCG Media Scanner',
       }
 
       return names[name] || name
-    }
+    },
   },
-  data () {
+  data() {
     return {
-      t: Date.now()
+      t: Date.now(),
     }
   },
-  created () {
+  created() {
     this.interval = setInterval(() => {
       this.t = Date.now()
     }, 500)
   },
-  destroyed () {
+  destroyed() {
     clearInterval(this.interval)
-  }
+  },
 }
 </script>

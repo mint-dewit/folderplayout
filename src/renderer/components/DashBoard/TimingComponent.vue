@@ -12,23 +12,23 @@
 <script>
 export default {
   computed: {
-    playoutState () {
+    playoutState() {
       return this.$store.getters.getPlayoutState(this.t)
-    }
+    },
   },
-  data () {
+  data() {
     return {
       curTime: new Date().toLocaleTimeString('nl-nl'),
       countdown: '00:00:00',
-      t: Date.now()
+      t: Date.now(),
     }
   },
-  created () {
+  created() {
     this.interval = setInterval(() => {
       this.curTime = new Date().toLocaleTimeString('nl-nl')
       if (this.playoutState.nextUpTime > 0) {
-        let t = (this.playoutState.nextUpTime - Date.now())
-        const makeTwo = num => ('00' + Math.floor(num)).substr(-2)
+        let t = this.playoutState.nextUpTime - Date.now()
+        const makeTwo = (num) => ('00' + Math.floor(num)).substr(-2)
         this.countdown = `${makeTwo(t / 3600000)}:${makeTwo((t % 3600000) / 60000)}:${makeTwo((t % 60000) / 1000)}`
       } else {
         this.countdown = '--:--:--'
@@ -36,9 +36,9 @@ export default {
       this.t = Date.now()
     }, 200)
   },
-  destroyed () {
+  destroyed() {
     clearInterval(this.interval)
-  }
+  },
 }
 </script>
 
@@ -47,5 +47,3 @@ h1 {
   font-variant-numeric: tabular-nums;
 }
 </style>
-
-

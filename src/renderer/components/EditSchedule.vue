@@ -9,7 +9,7 @@
     <b-row>
       <b-col>
         <p>
-          <a href="#" style="color:black" v-on:click.prevent="deleteObject">
+          <a href="#" style="color: black;" v-on:click.prevent="deleteObject">
             <font-awesome-icon icon="trash"></font-awesome-icon>
           </a>
           type: {{ editObject.type }}
@@ -49,7 +49,10 @@
         <b-form-checkbox
           v-for="(day, index) in ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa']"
           :key="index"
-          :checked="days[index]" @change="toggleDay(index)" :id="day" >
+          :checked="days[index]"
+          @change="toggleDay(index)"
+          :id="day"
+        >
           {{ day.toUpperCase() }}
         </b-form-checkbox>
       </b-col>
@@ -74,10 +77,20 @@
           </b-input-group-prepend>
           <!-- <b-form-input type="date" v-bind:value="date[0]" v-on:change="updateDate($event, index, 0)"></b-form-input>
           <b-form-input type="date" v-bind:value="date[1]" v-on:change="updateDate($event, index, 1)"></b-form-input> -->
-          <b-form-datepicker type="date" v-bind:value="date[0]" :state="date | validDates" v-on:input="updateDate($event, index, 0)"></b-form-datepicker>
-          <b-form-datepicker type="date" v-bind:value="date[1]" :state="date | validDates" v-on:input="updateDate($event, index, 1)"></b-form-datepicker>
+          <b-form-datepicker
+            type="date"
+            v-bind:value="date[0]"
+            :state="date | validDates"
+            v-on:input="updateDate($event, index, 0)"
+          ></b-form-datepicker>
+          <b-form-datepicker
+            type="date"
+            v-bind:value="date[1]"
+            :state="date | validDates"
+            v-on:input="updateDate($event, index, 1)"
+          ></b-form-datepicker>
         </b-input-group>
-        
+
         <b-input-group>
           <!-- <b-form-input type="date" v-model="newDate[0]"></b-form-input> -->
           <b-form-datepicker v-model="newDate[0]" :state="newDate | validDatesExplicit"></b-form-datepicker>
@@ -85,7 +98,7 @@
           <b-form-datepicker v-model="newDate[1]" :state="newDate | validDatesExplicit"></b-form-datepicker>
           <b-input-group-append>
             <b-btn variant="primary" v-on:click.prevent="addDate()">
-             Add daterange
+              Add daterange
             </b-btn>
           </b-input-group-append>
         </b-input-group>
@@ -103,7 +116,7 @@
           </b-input-group-prepend>
           <b-form-input :value="time" @change="updateTime($event, index)"></b-form-input>
         </b-input-group>
-        
+
         <b-input-group>
           <b-form-input v-model="newTime"></b-form-input>
           <b-input-group-append>
@@ -115,8 +128,8 @@
       </b-col>
     </b-row>
   </b-container>
-            
-            <!-- <br /><hr />
+
+  <!-- <br /><hr />
             <div class="row">
                 <div class="col s6">
                     <a class="waves-effect waves-teal btn-flat" style="width: 100%" v-on:click.prevent="setProperties">Cancel</a>
@@ -128,13 +141,16 @@
 </template>
 
 <script>
-export default { // @todo: init date picker
+export default {
+  // @todo: init date picker
   name: 'edit-schedule',
   computed: {
     editObject: function () {
       console.log('this is new editobj')
       let obj = this.$store.getters.scheduleEntryById(this.id)
-      if (!obj.days) { obj.days = [] }
+      if (!obj.days) {
+        obj.days = []
+      }
       return obj
     },
     times: function () {
@@ -159,13 +175,13 @@ export default { // @todo: init date picker
         days[i] = new Set(this.editObject.days || []).has(i)
       }
       return days
-    }
+    },
   },
   data: function () {
     return {
       muted: false,
       newTime: '',
-      newDate: ['', '']
+      newDate: ['', ''],
     }
   },
   methods: {
@@ -175,12 +191,12 @@ export default { // @todo: init date picker
     },
     toggleDay: function (value) {
       console.log(value)
-      this.$store.dispatch('toggleDay', {_id: this.id, day: value})
+      this.$store.dispatch('toggleDay', { _id: this.id, day: value })
     },
 
     dispatchWeeks: function (value) {
       if (/([0-9]+)(,[0-9]+)*/.test(value)) {
-        value = value.split(',').map(o => Number(o))
+        value = value.split(',').map((o) => Number(o))
         this.$store.dispatch('setWeeks', { _id: this.id, value })
       } else {
         if (value === '') {
@@ -206,21 +222,21 @@ export default { // @todo: init date picker
       let dates = this.newDate
 
       if (dates[0] !== '' && dates[1] !== '' && dates[0] < dates[1]) {
-        this.$store.dispatch('addDateEntry', {_id: this.id, dateEntry: dates})
+        this.$store.dispatch('addDateEntry', { _id: this.id, dateEntry: dates })
         dates = ['', '']
       }
     },
     updateDate: function (val, index, type) {
       // where type = 0 for start and 1 for end
-      this.$store.dispatch('updateDateEntry', {_id: this.id, dateEntry: index, type: type, date: val})
+      this.$store.dispatch('updateDateEntry', { _id: this.id, dateEntry: index, type: type, date: val })
     },
     removeDate: function (index) {
-      this.$store.dispatch('deleteDateEntry', {_id: this.id, dateEntry: index})
+      this.$store.dispatch('deleteDateEntry', { _id: this.id, dateEntry: index })
 
       // if (this.editObject.dates[index])
       //     this.editObject.dates.splice(index, 1)
     },
-    isDateValid (dates, explicit = false) {
+    isDateValid(dates, explicit = false) {
       const valid = dates[0] <= dates[1]
 
       if (!valid) {
@@ -234,26 +250,30 @@ export default { // @todo: init date picker
 
     addTime: function (event) {
       if (/\b(\d){2}(:){1}(\d){2}(:){1}(\d){2}\b/.test(this.newTime)) {
-        this.$store.dispatch('addTime', {_id: this.id, time: this.newTime})
+        this.$store.dispatch('addTime', { _id: this.id, time: this.newTime })
         this.newTime = ''
       }
     },
     updateTime: function (val, index) {
       if (/\b(\d){2}(:){1}(\d){2}(:){1}(\d){2}\b/.test(val)) {
-        this.$store.dispatch('updateTime', {_id: this.id, index: index, time: val})
+        this.$store.dispatch('updateTime', { _id: this.id, index: index, time: val })
       } else {
         val = this.times[index]
       }
     },
     removeTime: function (index) {
-      if (this.editObject.times[index]) { this.$store.dispatch('deleteTime', {_id: this.id, index: index}) }
+      if (this.editObject.times[index]) {
+        this.$store.dispatch('deleteTime', { _id: this.id, index: index })
+      }
     },
 
     saveObject: function () {
       let props = this.editObject
       var list = this.schedule[this.path[0]]
       for (let i = 1; i < this.path.length; i++) {
-        if (list.type === 'group') { list = list.children[this.path[i]] }
+        if (list.type === 'group') {
+          list = list.children[this.path[i]]
+        }
       }
       console.log(list)
 
@@ -266,9 +286,15 @@ export default { // @todo: init date picker
           list.weeks.push(week.trim())
           console.log(list.weeks)
         }
-      } else if (list.weeks) { list.weeks = undefined }
+      } else if (list.weeks) {
+        list.weeks = undefined
+      }
 
-      if (props.dates.length > 0) { list.dates = [] } else { list.dates = undefined }
+      if (props.dates.length > 0) {
+        list.dates = []
+      } else {
+        list.dates = undefined
+      }
       for (let dates of props.dates) {
         dates[0] = dates[0].split('-').reverse().join('-')
         dates[1] = dates[1].split('-').reverse().join('-')
@@ -277,7 +303,11 @@ export default { // @todo: init date picker
 
       list.times = props.times.length > 0 ? props.times : undefined
 
-      if (props.type !== 'group') { list.path = props.path ? props.path : '' } else { list.name = props.name !== undefined ? props.name : '' }
+      if (props.type !== 'group') {
+        list.path = props.path ? props.path : ''
+      } else {
+        list.name = props.name !== undefined ? props.name : ''
+      }
     },
 
     deleteObject: function () {
@@ -286,32 +316,36 @@ export default { // @todo: init date picker
       let returnAndDeleteById = (parent) => {
         if (parent.children) {
           for (let child of parent.children) {
-            if (child._id === _id) { // child we are editing
+            if (child._id === _id) {
+              // child we are editing
               // delete:
-              this.$store.dispatch('deleteEntry', {_id: this.id})
+              this.$store.dispatch('deleteEntry', { _id: this.id })
 
               // navigate:
-              this.$router.push({path: '/schedule/' + (parent._id === 'MAIN_ENTRY' ? '' : parent._id + '/edit')})
+              this.$router.push({ path: '/schedule/' + (parent._id === 'MAIN_ENTRY' ? '' : parent._id + '/edit') })
 
               return parent
-            } else if (child.type === 'group') { // not the  child we are editing, but child is a group, therefore might contain what we are editing
+            } else if (child.type === 'group') {
+              // not the  child we are editing, but child is a group, therefore might contain what we are editing
               let res = returnAndDeleteById(child) || null
 
-              if (res) { return res }
+              if (res) {
+                return res
+              }
             }
           }
         }
       }
 
-      returnAndDeleteById({children: this.$store.state.schedule, _id: 'MAIN_ENTRY'})
+      returnAndDeleteById({ children: this.$store.state.schedule, _id: 'MAIN_ENTRY' })
 
       // this.$store.dispatch('deleteEntry', {_id: this.id});
 
       //
-    }
+    },
   },
   filters: {
-    validDates (dates) {
+    validDates(dates) {
       if (!dates[0] || !dates[1]) return false
       const valid = dates[0] <= dates[1]
 
@@ -321,11 +355,11 @@ export default { // @todo: init date picker
         return undefined
       }
     },
-    validDatesExplicit (dates) {
+    validDatesExplicit(dates) {
       if (!dates[0] && !dates[1]) return undefined
 
       return dates[0] <= dates[1]
-    }
+    },
   },
   watch: {
     muted: function (val) {
@@ -334,7 +368,7 @@ export default { // @todo: init date picker
     },
     editObject: function (v) {
       this.muted = v.audio === false
-    }
-  }
+    },
+  },
 }
 </script>

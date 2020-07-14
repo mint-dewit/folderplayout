@@ -6,30 +6,42 @@ import { MappingAtemType } from 'timeline-state-resolver/dist/types/src'
 
 const conductor = new Conductor()
 const scanner = new MediaScanner(Store.state.settings.mediaScannerURL)
-const parser = new RecurrenceParser(name => scanner.getMediaDuration(name), name => scanner.getFolderContents(name), null, () => null)
+const parser = new RecurrenceParser(
+  (name) => scanner.getMediaDuration(name),
+  (name) => scanner.getFolderContents(name),
+  null,
+  () => null
+)
 
 conductor.on('error', (...err) => console.log(...err))
-scanner.on('connectionChanged', status => updateDeviceStatus('mediascanner', status))
+scanner.on('connectionChanged', (status) => updateDeviceStatus('mediascanner', status))
 updateDeviceStatus('mediascanner', scanner.getStatus())
 
-conductor.init()
+conductor
+  .init()
   .then(() => {
     updateMappingsAndDevices()
   })
   .then(() => {
     createTimeline()
     scanner.on('changed', () => createTimeline())
-    Store.watch(state => state.playoutSchedule, () => createTimeline())
-    Store.watch(state => state.settings, () => {
-      updateMappingsAndDevices()
-      createTimeline()
-    })
+    Store.watch(
+      (state) => state.playoutSchedule,
+      () => createTimeline()
+    )
+    Store.watch(
+      (state) => state.settings,
+      () => {
+        updateMappingsAndDevices()
+        createTimeline()
+      }
+    )
   })
 
 let timeout = setTimeout(() => createTimeline(), 0)
 // let curReadableTimeline = []
 
-function createTimeline () {
+function createTimeline() {
   const settings = Store.state.settings
   const tls = []
   let time = Date.now() - 6 * 3600 * 1000 // 6 hrs ago
@@ -49,7 +61,8 @@ function createTimeline () {
   const readableTimeline = []
   for (const tl of tls) {
     const bg = []
-    for (let i = 0; i < tl.timeline.length; i++) { // make bg objects
+    for (let i = 0; i < tl.timeline.length; i++) {
+      // make bg objects
       if (tl.timeline[i].content.deviceType === 2) continue // no bg objects for atem
       const obj = JSON.parse(JSON.stringify(tl.timeline[i]))
       delete obj.classes
@@ -60,11 +73,11 @@ function createTimeline () {
       if (i === 0) {
         obj.enable = {
           start: `#${tl.timeline[0].id}.start - 2000`,
-          duration: 2000
+          duration: 2000,
         }
       } else {
         obj.enable = {
-          while: `#${tl.timeline[i - 1].id}`
+          while: `#${tl.timeline[i - 1].id}`,
         }
       }
       bg.push(obj)
@@ -79,118 +92,127 @@ function createTimeline () {
   // curReadableTimeline = readableTimeline
   Store.dispatch('setReadableTimeline', readableTimeline)
 
-  timeline.push({ // decklink bg = always on
-    id: 'decklink_bg',
-    layer: 'bg',
-    enable: {
-      while: 1
-    },
-    content: {
-      deviceType: 1,
-      type: 'input',
+  timeline.push(
+    {
+      // decklink bg = always on
+      id: 'decklink_bg',
+      layer: 'bg',
+      enable: {
+        while: 1,
+      },
+      content: {
+        deviceType: 1,
+        type: 'input',
 
-      device: Number(Store.state.settings.decklinkInput),
-      mixer: {
-        volume: 1,
-        inTransition: {
-          duration: 250
-        }
-      }
-    },
-    keyframes: [ // mute during unmuted playout
-      {
-        id: 'decklink_bg_kf0',
-        enable: {
-          while: '.PLAYOUT & !.MUTED'
+        device: Number(Store.state.settings.decklinkInput),
+        mixer: {
+          volume: 1,
+          inTransition: {
+            duration: 250,
+          },
         },
-        content: {
-          mixer: {
-            volume: 0,
-            inTransition: {
-              duration: 250
-            }
-          }
-        }
-      }
-    ]
-  },
-  { // atem input for infochannel = always enabled
-    id: 'atem_input_infochannel',
-    layer: 'ATEM',
-    enable: {
-      while: 1
+      },
+      keyframes: [
+        // mute during unmuted playout
+        {
+          id: 'decklink_bg_kf0',
+          enable: {
+            while: '.PLAYOUT & !.MUTED',
+          },
+          content: {
+            mixer: {
+              volume: 0,
+              inTransition: {
+                duration: 250,
+              },
+            },
+          },
+        },
+      ],
     },
-    priority: 1,
-    content: {
-      deviceType: 2,
-      type: 'me',
+    {
+      // atem input for infochannel = always enabled
+      id: 'atem_input_infochannel',
+      layer: 'ATEM',
+      enable: {
+        while: 1,
+      },
+      priority: 1,
+      content: {
+        deviceType: 2,
+        type: 'me',
 
-      me: {
-        programInput: Number(settings.infochannelAtemInput)
-      }
-    }
-  },
-  { // atem input for playout = enabled while playout
-    id: 'atem_input_playout',
-    layer: 'ATEM',
-    enable: {
-      while: '.PLAYOUT + 160' // 160 preroll on atem
+        me: {
+          programInput: Number(settings.infochannelAtemInput),
+        },
+      },
     },
-    priority: 2,
-    content: {
-      deviceType: 2,
-      type: 'me',
+    {
+      // atem input for playout = enabled while playout
+      id: 'atem_input_playout',
+      layer: 'ATEM',
+      enable: {
+        while: '.PLAYOUT + 160', // 160 preroll on atem
+      },
+      priority: 2,
+      content: {
+        deviceType: 2,
+        type: 'me',
 
-      me: {
-        programInput: settings.playoutAtemInput
-      }
-    }
-  },
-  { // atem audio from infochannel = outside of playout
-    id: 'atem_audio_bg',
-    layer: 'ATEM_AUDIO_BG',
-    enable: {
-      while: '!.PLAYOUT' // they need separate expression for some reason
+        me: {
+          programInput: settings.playoutAtemInput,
+        },
+      },
     },
-    content: {
-      deviceType: 2,
-      type: 'audioChan',
+    {
+      // atem audio from infochannel = outside of playout
+      id: 'atem_audio_bg',
+      layer: 'ATEM_AUDIO_BG',
+      enable: {
+        while: '!.PLAYOUT', // they need separate expression for some reason
+      },
+      content: {
+        deviceType: 2,
+        type: 'audioChan',
 
-      audioChannel: {
-        mixOption: 1 // enabled
-      }
-    }
-  },
-  { // atem audio from infochannel = when muted
-    id: 'atem_audio_muted',
-    layer: 'ATEM_AUDIO_BG',
-    enable: {
-      while: '.MUTED' // they need separate expression for some reason
+        audioChannel: {
+          mixOption: 1, // enabled
+        },
+      },
     },
-    content: {
-      deviceType: 2,
-      type: 'audioChan',
+    {
+      // atem audio from infochannel = when muted
+      id: 'atem_audio_muted',
+      layer: 'ATEM_AUDIO_BG',
+      enable: {
+        while: '.MUTED', // they need separate expression for some reason
+      },
+      content: {
+        deviceType: 2,
+        type: 'audioChan',
 
-      audioChannel: {
-        mixOption: 1 // enabled
-      }
-    }
-  },
-  { // atem audio from playout = when unmuted playout
-    id: 'atem_audio_playout',
-    layer: 'ATEM_AUDIO_PGM',
-    enable: {
-      while: '.PLAYOUT & !.MUTED & !.LIVE_AUDIO'
+        audioChannel: {
+          mixOption: 1, // enabled
+        },
+      },
     },
-    content: {
-      deviceType: 2,
-      type: 'audioChan',
+    {
+      // atem audio from playout = when unmuted playout
+      id: 'atem_audio_playout',
+      layer: 'ATEM_AUDIO_PGM',
+      enable: {
+        while: '.PLAYOUT & !.MUTED & !.LIVE_AUDIO',
+      },
+      content: {
+        deviceType: 2,
+        type: 'audioChan',
 
-      audioChannel: {
-        mixOption: 1 // enabled
-      }
+        audioChannel: {
+          mixOption: 1, // enabled
+        },
+      },
     }
-  })
+  )
 
   conductor.timeline = timeline
   clearTimeout(timeout)
@@ -198,7 +220,7 @@ function createTimeline () {
   // updateState()
 }
 
-async function addCasparCG (settings) {
+async function addCasparCG(settings) {
   updateDeviceStatus('ccg', { statusCode: 4, messages: ['CasparCG Disconnected'] }) // hack to make it get a status before first connection
 
   const device = await conductor.addDevice('ccg', {
@@ -206,28 +228,28 @@ async function addCasparCG (settings) {
     options: {
       host: settings.casparcgHost || '127.0.0.1',
       port: settings.casparcgPort || 5250,
-      useScheduling: false
-    }
+      useScheduling: false,
+    },
   })
 
   updateDeviceStatus('ccg', await device.device.getStatus())
   await device.device.on('connectionChanged', (deviceStatus) => updateDeviceStatus('ccg', deviceStatus))
 }
 
-async function addAtem (settings) {
+async function addAtem(settings) {
   updateDeviceStatus('atem', { statusCode: 4, messages: ['Atem Disconnected'] }) // hack to make it get a status before first connection
 
   const device = await conductor.addDevice('atem', {
     type: DeviceType.ATEM,
     options: {
-      host: settings.atemIp
-    }
+      host: settings.atemIp,
+    },
   })
   updateDeviceStatus('atem', await device.device.getStatus())
   await device.device.on('connectionChanged', (deviceStatus) => updateDeviceStatus('atem', deviceStatus))
 }
 
-function updateMappingsAndDevices () {
+function updateMappingsAndDevices() {
   const settings = Store.state.settings
 
   if (!conductor.getDevice('ccg')) {
@@ -239,11 +261,12 @@ function updateMappingsAndDevices () {
       device: DeviceType.CASPARCG,
       deviceId: 'ccg',
       channel: 1,
-      layer: 20
+      layer: 20,
     }
   }
 
-  if (settings.inputType === 0) { // decklink input
+  if (settings.inputType === 0) {
+    // decklink input
     if (conductor.mapping['ATEM']) {
       delete conductor.mapping['ATEM']
     }
@@ -259,11 +282,12 @@ function updateMappingsAndDevices () {
         device: DeviceType.CASPARCG,
         deviceId: 'ccg',
         channel: 1,
-        layer: 10
+        layer: 10,
       }
     }
     parser.liveMode = 'casparcg'
-  } else if (settings.inputType === 1) { // atem input
+  } else if (settings.inputType === 1) {
+    // atem input
     if (conductor.mapping['bg']) {
       delete conductor.mapping['bg']
     }
@@ -275,7 +299,7 @@ function updateMappingsAndDevices () {
         device: DeviceType.ATEM,
         deviceId: 'atem',
         mappingType: MappingAtemType.MixEffect,
-        index: 0
+        index: 0,
       }
     }
     if (!conductor.mapping['ATEM_AUDIO_BG']) {
@@ -283,7 +307,7 @@ function updateMappingsAndDevices () {
         device: DeviceType.ATEM,
         deviceId: 'atem',
         mappingType: MappingAtemType.AudioChannel,
-        index: settings.infochannelAtemInput
+        index: settings.infochannelAtemInput,
       }
     }
     for (let i = 1; i <= settings.playoutAtemChannels; i++) {
@@ -292,7 +316,7 @@ function updateMappingsAndDevices () {
           device: DeviceType.ATEM,
           deviceId: 'atem',
           mappingType: MappingAtemType.AudioChannel,
-          index: i
+          index: i,
         }
       }
     }
@@ -301,14 +325,14 @@ function updateMappingsAndDevices () {
         device: DeviceType.ATEM,
         deviceId: 'atem',
         mappingType: MappingAtemType.AudioChannel,
-        index: settings.playoutAtemInput
+        index: settings.playoutAtemInput,
       }
     }
     parser.liveMode = 'atem'
   }
 }
 
-function updateDeviceStatus (deviceName, deviceStatus) {
+function updateDeviceStatus(deviceName, deviceStatus) {
   Store.dispatch('setDeviceState', { device: deviceName, status: deviceStatus })
 }
 

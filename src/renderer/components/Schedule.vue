@@ -5,7 +5,7 @@
         <b-row>
           <b-col>
             <a href="#" v-on:click.prevent="back()">
-              <h3 style="color: black; float: left">
+              <h3 style="color: black; float: left;">
                 <font-awesome-icon v-if="parentEntry._id != 'MAIN_ENTRY'" icon="arrow-left"></font-awesome-icon>
                 {{ parentEntry.name || 'Untitled' }}
               </h3>
@@ -23,12 +23,13 @@
             <b-list-group>
               <draggable @end="reorder">
                 <b-list-group-item
-                  v-for="(item) of renderList()"
+                  v-for="item of renderList()"
                   :key="item._id"
-                  :to="{path: '/schedule/'+item._id+'/edit'}"
+                  :to="{ path: '/schedule/' + item._id + '/edit' }"
                   class="collection-item schedule-entry"
-                  v-bind:class="{active: isActive(item._id)}"
-                >{{ item.type }}: {{ item.name || item.path || "Untitled" }}</b-list-group-item>
+                  v-bind:class="{ active: isActive(item._id) }"
+                  >{{ item.type }}: {{ item.name || item.path || 'Untitled' }}</b-list-group-item
+                >
               </draggable>
             </b-list-group>
           </b-col>
@@ -57,11 +58,11 @@ export default {
     },
     schedule: function () {
       return this.$store.state.schedule
-    }
+    },
   },
   data: function () {
     return {
-      path: []
+      path: [],
     }
   },
   methods: {
@@ -71,7 +72,7 @@ export default {
     },
 
     renderList: function () {
-      let findList = parent => {
+      let findList = (parent) => {
         if (parent.children) {
           for (let child of parent.children) {
             if (child._id === this.$route.params.id && child.type === 'group') {
@@ -131,7 +132,7 @@ export default {
     back: function () {
       let _id = this.$route.params.id
 
-      let findById = parent => {
+      let findById = (parent) => {
         if (parent.children) {
           for (let child of parent.children) {
             if (child._id === _id) {
@@ -155,36 +156,34 @@ export default {
 
     createObject: function (type) {
       // find parent to attach object to
-      const parentId = (
-        this.$store.getters.findGroupOrParent(this.$route.params.id) || {}
-      )._id
+      const parentId = (this.$store.getters.findGroupOrParent(this.$route.params.id) || {})._id
       // commit object
       this.$store.dispatch('newEntry', { type: type, _id: parentId })
       // change view?
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style>
-    .left-panel {
-        top: 64px;
-        width: 50%;
-        float: left;
-        position: absolute;
-        min-height: calc(100% - 64px);
-    }
-    .right-panel {
-        top: 64px;
-        width: 50%;
-        display: block;
-        height: calc(100% - 64px);
-        overflow: scroll;
-        right: 0;
-        position: fixed;
-        background: #fff;
-    }
-    .schedule-entry {
-        cursor: pointer;
-    }
+.left-panel {
+  top: 64px;
+  width: 50%;
+  float: left;
+  position: absolute;
+  min-height: calc(100% - 64px);
+}
+.right-panel {
+  top: 64px;
+  width: 50%;
+  display: block;
+  height: calc(100% - 64px);
+  overflow: scroll;
+  right: 0;
+  position: fixed;
+  background: #fff;
+}
+.schedule-entry {
+  cursor: pointer;
+}
 </style>

@@ -8,32 +8,32 @@ export default new Router({
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: require('@/components/DashBoard').default
+      component: require('../components/DashBoard').default,
     },
     {
       path: '/schedule',
       name: 'schedule',
-      component: require('@/components/Schedule').default
+      component: require('../components/Schedule').default,
     },
     {
       path: '/schedule/:id',
       name: 'schedule',
-      component: require('@/components/Schedule').default,
+      component: require('../components/Schedule').default,
       children: [
         {
           path: 'edit',
-          component: require('@/components/EditSchedule').default
-        }
-      ]
+          component: require('../components/EditSchedule').default,
+        },
+      ],
     },
     {
       path: '/settings',
       name: 'settings',
-      component: require('@/components/Settings').default
+      component: require('../components/Settings').default,
     },
     {
       path: '*',
-      redirect: '/dashboard'
-    }
-  ]
+      redirect: '/dashboard',
+    },
+  ],
 })

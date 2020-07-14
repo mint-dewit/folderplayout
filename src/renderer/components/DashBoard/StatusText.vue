@@ -12,22 +12,22 @@
 <script>
 export default {
   computed: {
-    playoutState () {
+    playoutState() {
       return this.$store.getters.getPlayoutState(this.t)
-    }
+    },
   },
-  data () {
+  data() {
     return {
-      t: Date.now()
+      t: Date.now(),
     }
   },
-  created () {
+  created() {
     this.interval = setInterval(() => {
       this.t = Date.now()
     }, 1000)
   },
-  destroyed () {
+  destroyed() {
     clearInterval(this.interval)
-  }
+  },
 }
 </script>

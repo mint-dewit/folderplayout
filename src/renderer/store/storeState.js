@@ -9,27 +9,27 @@ import merge from 'deepmerge'
 const STORAGE_KEY = 'state' // Note - change this in assets/fatal.html too
 
 class PersistedState {
-  constructor (options, store) {
+  constructor(options, store) {
     this.options = options
     this.store = store
   }
 
-  loadOptions () {
+  loadOptions() {
     if (!this.options.storageKey) this.options.storageKey = STORAGE_KEY
 
     this.whitelist = this.loadFilter(this.options.whitelist, 'whitelist')
     this.blacklist = this.loadFilter(this.options.blacklist, 'blacklist')
   }
 
-  getState () {
+  getState() {
     return JSON.parse(window.localStorage.getItem(this.options.storageKey))
   }
 
-  setState (state) {
+  setState(state) {
     window.localStorage.setItem(this.options.storageKey, JSON.stringify(state))
   }
 
-  loadFilter (filter, name) {
+  loadFilter(filter, name) {
     if (!filter) {
       return null
     } else if (filter instanceof Array) {
@@ -42,20 +42,19 @@ class PersistedState {
     }
   }
 
-  filterInArray (list) {
+  filterInArray(list) {
     return (mutation) => {
       return list.includes(mutation.type)
     }
   }
 
-  checkStorage () {
+  checkStorage() {
     if (!window || !window.localStorage) {
-      throw new Error('Could not find ' +
-        'localStorage, which is required by storeState.js')
+      throw new Error('Could not find ' + 'localStorage, which is required by storeState.js')
     }
   }
 
-  combineMerge (target, source, options) {
+  combineMerge(target, source, options) {
     const emptyTarget = (value) => (Array.isArray(value) ? [] : {})
     const clone = (value, options) => merge(emptyTarget(value), value, options)
     const destination = target.slice()
@@ -75,17 +74,16 @@ class PersistedState {
     return destination
   }
 
-  loadInitialState () {
+  loadInitialState() {
     const state = this.getState(this.options.storage, this.options.storageKey)
 
     if (state) {
-      const mergedState = merge(this.store.state, state,
-        { arrayMerge: this.combineMerge })
+      const mergedState = merge(this.store.state, state, { arrayMerge: this.combineMerge })
       this.store.replaceState(mergedState)
     }
   }
 
-  subscribeOnChanges () {
+  subscribeOnChanges() {
     this.store.subscribe((mutation, state) => {
       if (this.blacklist && this.blacklist(mutation)) return
       if (this.whitelist && !this.whitelist(mutation)) return

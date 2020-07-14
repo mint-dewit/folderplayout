@@ -1,0 +1,61 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:node/recommended",
+    "plugin:vue/essential",
+    "plugin:prettier/recommended"
+  ],
+  "plugins": [
+    "prettier"
+  ],
+  "parser": "vue-eslint-parser",
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "settings": {
+    "node": {
+      "tryExtensions": [
+        ".js",
+        ".json",
+        ".node",
+        ".vue"
+      ]
+    },
+    "import/resolver": {
+      "alias": [
+        "@",
+        "./src/renderer"
+      ]
+    }
+  },
+  "rules": {
+    "no-unused-vars": "off",
+    "no-extra-semi": "off",
+    "prettier/prettier": "error",
+    "node/no-unsupported-features/es-syntax": [
+      "error",
+      {
+        "ignores": [
+          "modules"
+        ]
+      }
+    ],
+    "node/no-unpublished-import": [
+      "error",
+      {
+        "allowModules": [
+          "electron"
+        ]
+      }
+    ],
+    "node/no-unpublished-require": [
+      "error",
+      {
+        "allowModules": [
+          "electron"
+        ]
+      }
+    ],
+    "node/no-extraneous-import": "off"
+  }
+}

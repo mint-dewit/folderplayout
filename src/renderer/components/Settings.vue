@@ -7,12 +7,16 @@
 
           <b-row>
             <b-col sm="3"><label for="decklink-input">Infochannel Input Type:</label></b-col>
-            <b-col sm="9"><b-form-select id="decklink-input" :options="inputTypes" v-model="inputType"></b-form-select></b-col>
+            <b-col sm="9"
+              ><b-form-select id="decklink-input" :options="inputTypes" v-model="inputType"></b-form-select
+            ></b-col>
           </b-row>
 
           <b-row v-if="inputType === 0">
             <b-col sm="3"><label for="decklink-input">Infochannel Decklink Input:</label></b-col>
-            <b-col sm="9"><b-form-input id="decklink-input" type="number" min="1" v-model="decklinkInput"></b-form-input></b-col>
+            <b-col sm="9"
+              ><b-form-input id="decklink-input" type="number" min="1" v-model="decklinkInput"></b-form-input
+            ></b-col>
           </b-row>
 
           <b-row v-if="inputType === 1">
@@ -21,15 +25,21 @@
           </b-row>
           <b-row v-if="inputType === 1">
             <b-col sm="3"><label for="decklink-input">Infochannel Atem Input:</label></b-col>
-            <b-col sm="9"><b-form-input id="decklink-input" type="number" v-model="infochannelAtemInput"></b-form-input></b-col>
+            <b-col sm="9"
+              ><b-form-input id="decklink-input" type="number" v-model="infochannelAtemInput"></b-form-input
+            ></b-col>
           </b-row>
           <b-row v-if="inputType === 1">
             <b-col sm="3"><label for="decklink-input">Playout Atem Input:</label></b-col>
-            <b-col sm="9"><b-form-input id="decklink-input" type="number" min="1" v-model="playoutAtemInput"></b-form-input></b-col>
+            <b-col sm="9"
+              ><b-form-input id="decklink-input" type="number" min="1" v-model="playoutAtemInput"></b-form-input
+            ></b-col>
           </b-row>
           <b-row v-if="inputType === 1">
             <b-col sm="3"><label for="decklink-channels">Atem Audio Channels:</label></b-col>
-            <b-col sm="9"><b-form-input id="decklink-channels" type="number" min="0" v-model="playoutAtemChannels"></b-form-input></b-col>
+            <b-col sm="9"
+              ><b-form-input id="decklink-channels" type="number" min="0" v-model="playoutAtemChannels"></b-form-input
+            ></b-col>
           </b-row>
 
           <b-row>
@@ -67,87 +77,86 @@
 export default {
   computed: {
     decklinkInput: {
-      get () {
+      get() {
         return this.$store.state.settings.decklinkInput
       },
-      set (val) {
+      set(val) {
         this.$store.dispatch('settingsUpdate', { decklinkInput: val })
-      }
+      },
     },
     inputType: {
-      get () {
+      get() {
         return this.$store.state.settings.inputType
       },
-      set (val) {
+      set(val) {
         this.$store.dispatch('settingsUpdate', { inputType: val })
-      }
+      },
     },
     atemIp: {
-      get () {
+      get() {
         return this.$store.state.settings.atemIp
       },
-      set (val) {
+      set(val) {
         this.$store.dispatch('settingsUpdate', { atemIp: val })
-      }
+      },
     },
     infochannelAtemInput: {
-      get () {
+      get() {
         return this.$store.state.settings.infochannelAtemInput
       },
-      set (val) {
+      set(val) {
         this.$store.dispatch('settingsUpdate', { infochannelAtemInput: val })
-      }
+      },
     },
     playoutAtemInput: {
-      get () {
+      get() {
         return this.$store.state.settings.playoutAtemInput
       },
-      set (val) {
+      set(val) {
         this.$store.dispatch('settingsUpdate', { playoutAtemInput: val })
-      }
+      },
     },
     playoutAtemChannels: {
-      get () {
+      get() {
         return this.$store.state.settings.playoutAtemChannels
       },
-      set (val) {
+      set(val) {
         console.log('chans', val)
         this.$store.dispatch('settingsUpdate', { playoutAtemChannels: Number(val) })
-      }
+      },
     },
     mediaScannerURL: {
-      get () {
+      get() {
         return this.$store.state.settings.mediaScannerURL
       },
-      set (val) {
+      set(val) {
         this.$store.dispatch('settingsUpdate', { mediaScannerURL: val })
-      }
+      },
     },
     casparcgHost: {
-      get () {
+      get() {
         return this.$store.state.settings.casparcgHost
       },
-      set (val) {
+      set(val) {
         this.$store.dispatch('settingsUpdate', { casparcgHost: val })
-      }
+      },
     },
     casparcgPort: {
-      get () {
+      get() {
         return this.$store.state.settings.casparcgPort
       },
-      set (val) {
+      set(val) {
         this.$store.dispatch('settingsUpdate', { casparcgPort: val })
-      }
-    }
+      },
+    },
   },
-  data () {
+  data() {
     return {
       inputTypes: [
         { value: 0, text: 'Decklink Input' },
-        { value: 1, text: 'Atem Input' }
-      ]
+        { value: 1, text: 'Atem Input' },
+      ],
     }
-  }
+  },
 }
 </script>
-

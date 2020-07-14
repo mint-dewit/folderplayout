@@ -12,33 +12,38 @@ if (process.env.NODE_ENV !== 'development') {
 
 let mainWindow
 let fatalErrorWindow
-const winURL = process.env.NODE_ENV === 'development'
-  ? `http://localhost:9080`
-  : `file://${__dirname}/index.html`
-const fatalErrWinURL = process.env.NODE_ENV === 'development'
-  ? `http://localhost:9080/static/fatal.html`
-  : `file://${__dirname}/static/fatal.html`
+const winURL = process.env.NODE_ENV === 'development' ? `http://localhost:9080` : `file://${__dirname}/index.html`
+const fatalErrWinURL =
+  process.env.NODE_ENV === 'development'
+    ? `http://localhost:9080/static/fatal.html`
+    : `file://${__dirname}/static/fatal.html`
 
-  // const fatalErrWinURL = `file://${__dirname}/static/fatal.html`
+// const fatalErrWinURL = `file://${__dirname}/static/fatal.html`
 
-function createFatalErrorWindow () {
+function createFatalErrorWindow() {
   fatalErrorWindow = new BrowserWindow({
     height: 563,
     useContentSize: true,
-    width: 400
+    width: 400,
+    webPreferences: {
+      nodeIntegration: true, // TODO This needs to be removed asap
+    },
   })
 
   fatalErrorWindow.loadURL(fatalErrWinURL)
 }
 
-function createWindow () {
+function createWindow() {
   /**
    * Initial window options
    */
   mainWindow = new BrowserWindow({
     height: 563,
     useContentSize: true,
-    width: 1000
+    width: 1000,
+    webPreferences: {
+      nodeIntegration: true, // TODO This needs to be removed asap
+    },
   })
 
   mainWindow.loadURL(winURL)

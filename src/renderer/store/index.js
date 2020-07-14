@@ -21,9 +21,9 @@ export default new Vuex.Store({
       playoutAtemChannels: 0,
       mediaScannerURL: 'http://127.0.0.1:8000/',
       casparcgHost: '127.0.0.1',
-      casparcgPort: 5250
+      casparcgPort: 5250,
     },
-    deviceState: {}
+    deviceState: {},
   },
   getters: {
     /**
@@ -77,11 +77,14 @@ export default new Vuex.Store({
       let findById = (parent) => {
         if (parent.children) {
           for (let child of parent.children) {
-            if (child._id === _id && child.type === 'group') { // child we are editing, and child is a group
+            if (child._id === _id && child.type === 'group') {
+              // child we are editing, and child is a group
               return child
-            } else if (child._id === _id) { // child we are editing, but child is not a group
+            } else if (child._id === _id) {
+              // child we are editing, but child is not a group
               return parent
-            } else if (child.type === 'group') { // not the  child we are editing, but child is a group, therefore might contain what we are editing
+            } else if (child.type === 'group') {
+              // not the  child we are editing, but child is a group, therefore might contain what we are editing
               let res = findById(child) || null
 
               if (res) return res
@@ -93,12 +96,12 @@ export default new Vuex.Store({
       return findById({ children: state.schedule, _id: 'MAIN_ENTRY', name: 'Schedule' })
     },
 
-    getPlayoutState: (state) => t => {
+    getPlayoutState: (state) => (t) => {
       const playoutState = {
         nextUpTime: 0,
         startTime: 0,
         nowPlaying: 'Nothing',
-        nextUp: 'Unknown / nothing'
+        nextUp: 'Unknown / nothing',
       }
 
       if (!state.readableTimeline || state.readableTimeline.length === 0) {
@@ -107,14 +110,14 @@ export default new Vuex.Store({
 
       const readableTimeline = JSON.parse(JSON.stringify(state.readableTimeline))
 
-      const previous = readableTimeline.reverse().find(o => {
-        return (o.start + o.duration) < t
+      const previous = readableTimeline.reverse().find((o) => {
+        return o.start + o.duration < t
       })
       readableTimeline.reverse() // reverse back
       const curPlaying = readableTimeline.find((o) => {
-        return o.start < t && (o.start + o.duration) > t
+        return o.start < t && o.start + o.duration > t
       })
-      const next = readableTimeline.find(o => {
+      const next = readableTimeline.find((o) => {
         return o.start > t
       })
 
@@ -146,7 +149,7 @@ export default new Vuex.Store({
       }
 
       return playoutState
-    }
+    },
   },
   mutations: {
     /**
@@ -154,10 +157,10 @@ export default new Vuex.Store({
      * @param {Object} state
      * @param {Object} payload _id determines the parent of the new entry
      */
-    newEntry (state, payload) {
+    newEntry(state, payload) {
       const newEntry = {
         _id: payload.newId,
-        type: payload.type
+        type: payload.type,
       }
 
       if (payload.type === 'group') {
@@ -193,7 +196,7 @@ export default new Vuex.Store({
      * @param {Object} state
      * @param {Object} payload
      */
-    deleteEntry (state, payload) {
+    deleteEntry(state, payload) {
       let deleteId = (parent) => {
         for (let i in parent) {
           if (parent[i]._id === payload._id) {
@@ -207,7 +210,7 @@ export default new Vuex.Store({
       deleteId(state.schedule)
     },
 
-    toggleDay (_, payload) {
+    toggleDay(_, payload) {
       const entry = this.getters.scheduleEntryById(payload._id)
       if (!entry) throw new Error('Could not find entry with id ' + payload._id)
       if (entry.days && entry.days.indexOf(payload.day) > -1) {
@@ -218,7 +221,7 @@ export default new Vuex.Store({
       }
     },
 
-    setMuted (_state, payload) {
+    setMuted(_state, payload) {
       const entry = this.getters.scheduleEntryById(payload._id)
       if (payload.muted !== true) {
         delete entry.audio
@@ -233,7 +236,7 @@ export default new Vuex.Store({
      * @param {Object} state
      * @param {Object} payload
      */
-    addTime (_state, payload) {
+    addTime(_state, payload) {
       const entry = this.getters.scheduleEntryById(payload._id)
       if (entry.times) {
         entry.times.push(payload.time)
@@ -250,7 +253,7 @@ export default new Vuex.Store({
      * @param {Object} state
      * @param {Object} payload
      */
-    updateTime (_state, payload) {
+    updateTime(_state, payload) {
       const entry = this.getters.scheduleEntryById(payload._id)
       entry.times[payload.index] = payload.time
     },
@@ -262,22 +265,24 @@ export default new Vuex.Store({
      * @param {Object} state The store state
      * @param {Object} payload An object with parameters
      */
-    deleteTime (_state, payload) {
+    deleteTime(_state, payload) {
       const entry = this.getters.scheduleEntryById(payload._id)
       entry.times.splice(payload.index, 1)
-      if (entry.times.length === 0) { Vue.set(entry, 'times', null) }
+      if (entry.times.length === 0) {
+        Vue.set(entry, 'times', null)
+      }
     },
 
-    addDateEntry (_state, payload) {
+    addDateEntry(_state, payload) {
       const entry = this.getters.scheduleEntryById(payload._id)
       if (entry.dates) {
         entry.dates.push(payload.dateEntry)
       } else {
-        Vue.set(entry, 'dates', [ payload.dateEntry ])
+        Vue.set(entry, 'dates', [payload.dateEntry])
       }
     },
 
-    updateDateEntry (_state, payload) {
+    updateDateEntry(_state, payload) {
       const entry = this.getters.scheduleEntryById(payload._id)
       const dates = entry.dates[payload.dateEntry]
       dates[payload.type] = payload.date
@@ -285,13 +290,15 @@ export default new Vuex.Store({
       Vue.set(entry.dates, payload.dateEntry, dates)
     },
 
-    deleteDateEntry (_state, payload) {
+    deleteDateEntry(_state, payload) {
       const entry = this.getters.scheduleEntryById(payload._id)
       entry.dates.splice(payload.index, 1)
-      if (entry.dates.length === 0) { Vue.set(entry, 'dates', null) }
+      if (entry.dates.length === 0) {
+        Vue.set(entry, 'dates', null)
+      }
     },
 
-    reorder (_, payload) {
+    reorder(_, payload) {
       var list = this.getters.findGroupOrParent(payload.id)
       list = list.children
 
@@ -299,7 +306,7 @@ export default new Vuex.Store({
       list.splice(payload.newIndex, 0, movedItem)
     },
 
-    updateWeeks (state, payload) {
+    updateWeeks(state, payload) {
       const entry = this.getters.scheduleEntryById(payload._id)
       entry.weeks = payload.value
       // if (!entry.weeks || typeof entry.weeks !== 'object') entry.weeks = []
@@ -321,7 +328,7 @@ export default new Vuex.Store({
       // }
     },
 
-    updatePath (_state, payload) {
+    updatePath(_state, payload) {
       const entry = this.getters.scheduleEntryById(payload._id)
       if (entry.type === 'group') {
         entry.name = payload.value
@@ -347,139 +354,139 @@ export default new Vuex.Store({
       // findEntry(state.schedule)
     },
 
-    updateInput (_state, payload) {
+    updateInput(_state, payload) {
       const entry = this.getters.scheduleEntryById(payload._id)
       if (entry.type === 'input') {
         entry.input = payload.value
       }
     },
 
-    updateDuration (_state, payload) {
+    updateDuration(_state, payload) {
       const entry = this.getters.scheduleEntryById(payload._id)
       if (entry.type === 'input') {
         entry.duration = payload.value
       }
     },
 
-    updatePlayoutSchedule (state) {
+    updatePlayoutSchedule(state) {
       state.playoutSchedule = JSON.parse(JSON.stringify(state.schedule))
     },
 
-    resetSchedule (state) {
+    resetSchedule(state) {
       state.schedule = JSON.parse(JSON.stringify(state.playoutSchedule))
     },
 
-    updatePlayoutState (state, payload) {
+    updatePlayoutState(state, payload) {
       state.playoutState = { ...state.playoutState, ...payload }
     },
 
-    resetScheduleTo (state, schedule) {
+    resetScheduleTo(state, schedule) {
       state.schedule = schedule
     },
 
-    settingsUpdateDecklink (state, input) {
+    settingsUpdateDecklink(state, input) {
       state.settings.decklinkInput = input
     },
 
-    settingsSet (state, settings) {
+    settingsSet(state, settings) {
       state.settings = settings
     },
 
-    setReadableTimeline (state, tl) {
+    setReadableTimeline(state, tl) {
       state.readableTimeline = tl
     },
 
-    setDeviceState (state, payload) {
+    setDeviceState(state, payload) {
       Vue.set(state.deviceState, payload.device, payload.status)
     },
-    removeDeviceState (state, device) {
+    removeDeviceState(state, device) {
       Vue.delete(state.deviceState, device)
-    }
+    },
   },
   actions: {
-    newEntry (context, payload) {
+    newEntry(context, payload) {
       context.commit('newEntry', { ...payload, newId: uid() })
     },
 
-    deleteEntry (context, payload) {
+    deleteEntry(context, payload) {
       context.commit('deleteEntry', payload)
     },
 
-    toggleDay (context, payload) {
+    toggleDay(context, payload) {
       context.commit('toggleDay', payload)
     },
 
-    setMuted (context, payload) {
+    setMuted(context, payload) {
       context.commit('setMuted', payload)
     },
 
-    addTime (context, payload) {
+    addTime(context, payload) {
       context.commit('addTime', payload)
     },
 
-    updateTime (context, payload) {
+    updateTime(context, payload) {
       context.commit('updateTime', payload)
     },
 
-    deleteTime (context, payload) {
+    deleteTime(context, payload) {
       context.commit('deleteTime', payload)
     },
 
-    addDateEntry (context, payload) {
+    addDateEntry(context, payload) {
       context.commit('addDateEntry', payload)
     },
 
-    updateDateEntry (context, payload) {
+    updateDateEntry(context, payload) {
       context.commit('updateDateEntry', payload)
     },
 
-    deleteDateEntry (context, payload) {
+    deleteDateEntry(context, payload) {
       context.commit('deleteDateEntry', payload)
     },
 
-    reorder (context, payload) {
+    reorder(context, payload) {
       context.commit('reorder', payload)
     },
 
-    setWeeks (context, payload) {
+    setWeeks(context, payload) {
       context.commit('updateWeeks', payload)
     },
 
-    setPath (context, payload) {
+    setPath(context, payload) {
       context.commit('updatePath', payload)
     },
 
-    setInput (context, payload) {
+    setInput(context, payload) {
       context.commit('updateInput', payload)
     },
 
-    setDuration (context, payload) {
+    setDuration(context, payload) {
       context.commit('updateDuration', payload)
     },
 
-    setPlayoutSchedule (context) {
+    setPlayoutSchedule(context) {
       context.commit('updatePlayoutSchedule')
     },
 
-    resetSchedule (context) {
+    resetSchedule(context) {
       context.commit('resetSchedule')
     },
 
-    updatePlayoutState (context, payload) {
+    updatePlayoutState(context, payload) {
       context.commit('updatePlayoutState', payload)
     },
 
-    exportSchedule (context, filename) {
+    exportSchedule(context, filename) {
       const schedule = JSON.stringify(context.state.schedule, null, 2)
       fs.writeFile(filename, schedule)
     },
 
-    importSchedule (context, filename) {
+    importSchedule(context, filename) {
       try {
         const rawData = fs.readFileSync(filename)
         const schedule = JSON.parse(rawData)
 
-        const makeWeekDaysNumbers = el => {
+        const makeWeekDaysNumbers = (el) => {
           if (el.days) {
             for (let i = 0; i < el.days.length; i++) {
               el.days.splice(i, 1, Number(el.days[i]))
@@ -498,28 +505,26 @@ export default new Vuex.Store({
     },
 
     // deprecated:
-    settingsSetDecklink (context, input) {
+    settingsSetDecklink(context, input) {
       context.commit('settingsUpdateDecklink', input)
     },
 
-    settingsUpdate (context, input) {
+    settingsUpdate(context, input) {
       context.commit('settingsSet', { ...context.state.settings, ...input })
     },
 
-    setReadableTimeline (context, tl) {
+    setReadableTimeline(context, tl) {
       context.commit('setReadableTimeline', tl)
     },
 
-    setDeviceState ({ commit }, payload) {
+    setDeviceState({ commit }, payload) {
       commit('setDeviceState', payload)
     },
 
-    removeDeviceState ({ commit }, device) {
+    removeDeviceState({ commit }, device) {
       commit('removeDeviceState', device)
-    }
+    },
   },
-  plugins: [
-    storeState()
-  ],
-  strict: process.env.NODE_ENV !== 'production'
+  plugins: [storeState()],
+  strict: process.env.NODE_ENV !== 'production',
 })
