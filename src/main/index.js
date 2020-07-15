@@ -1,6 +1,7 @@
 'use strict'
 
 import { app, BrowserWindow } from 'electron'
+import { API } from './api'
 
 /**
  * Set `__static` path to static files in production
@@ -45,6 +46,12 @@ function createWindow() {
       nodeIntegration: true, // TODO This needs to be removed asap
     },
   })
+  let api
+
+  mainWindow.webContents.on('dom-ready', () => {
+    console.log('create API')
+    api = new API(mainWindow)
+  })
 
   mainWindow.loadURL(winURL)
 
@@ -64,6 +71,7 @@ function createWindow() {
 
   mainWindow.on('closed', () => {
     mainWindow = null
+    api.dispose()
   })
 }
 

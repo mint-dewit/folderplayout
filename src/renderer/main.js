@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import BootstrapVue from 'bootstrap-vue'
+import { ipcRenderer } from 'electron'
 
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-import '../main/playout'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
@@ -21,6 +21,25 @@ Vue.use(BootstrapVue)
 library.add(fas)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
+
+ipcRenderer.on('init', () => {
+  ipcRenderer.send('init', {
+    schedule: store.state.playoutSchedule,
+    settings: store.state.settings,
+  })
+})
+ipcRenderer.on('setReadableTimeline', (ev, tl) => {
+  console.log('readable tl', tl)
+  store.dispatch('setReadableTimeline', tl)
+})
+ipcRenderer.on('setDeviceState', (ev, device, status) => {
+  console.log('device status', device, status)
+  store.dispatch('setDeviceState', { device, status })
+})
+ipcRenderer.on('removeDeviceState', (ev, device) => {
+  console.log('remove device', device)
+  store.dispatch('removeDeviceState', device)
+})
 
 window.store = store
 

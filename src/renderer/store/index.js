@@ -5,6 +5,8 @@ import uid from 'uid'
 import storeState from './storeState'
 import fs from 'fs'
 
+import { ipcRenderer } from 'electron'
+
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -466,6 +468,8 @@ export default new Vuex.Store({
 
     setPlayoutSchedule(context) {
       context.commit('updatePlayoutSchedule')
+
+      ipcRenderer.send('schedule', context.state.schedule) // TODO - verify this is the updated schedule (because it runs after .commit??)
     },
 
     resetSchedule(context) {
@@ -511,6 +515,8 @@ export default new Vuex.Store({
 
     settingsUpdate(context, input) {
       context.commit('settingsSet', { ...context.state.settings, ...input })
+
+      ipcRenderer.send('settings', { ...context.state.settings, ...input })
     },
 
     setReadableTimeline(context, tl) {
