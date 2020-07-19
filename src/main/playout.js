@@ -150,7 +150,7 @@ export class PlayoutManager {
         id: 'atem_input_playout',
         layer: 'ATEM',
         enable: {
-          while: '.PLAYOUT + 160', // 160 preroll on atem
+          while: '!(.LIVE + 160) & .PLAYOUT + 160', // block during live inputs + 160 preroll decklink compensation
         },
         priority: 2,
         content: {
