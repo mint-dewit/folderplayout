@@ -129,6 +129,27 @@ export class PlayoutManager {
         ],
       },
       {
+        // default audio = always on. this obj prevents a bug in ccg-state where it forgets something is muted.
+        id: 'ccg_playout_audio',
+        layer: 'PLAYOUT',
+        enable: {
+          while: 1,
+        },
+        priority: -1, // as low as it gets
+        content: {
+          deviceType: 1,
+          type: 'media',
+
+          file: 'EMPTY',
+          mixer: {
+            volume: 1,
+            inTransition: {
+              duration: 0,
+            },
+          },
+        },
+      },
+      {
         // atem input for infochannel = always enabled
         id: 'atem_input_infochannel',
         layer: 'ATEM',
