@@ -370,6 +370,13 @@ export default new Vuex.Store({
       }
     },
 
+    updateSorting(_state, payload) {
+      const entry = this.getters.scheduleEntryById(payload._id)
+      if (entry.type === 'folder') {
+        entry.sort = payload.value
+      }
+    },
+
     updatePlayoutSchedule(state) {
       state.playoutSchedule = JSON.parse(JSON.stringify(state.schedule))
     },
@@ -466,6 +473,10 @@ export default new Vuex.Store({
       context.commit('updateDuration', payload)
     },
 
+    setSorting(context, payload) {
+      context.commit('updateSorting', payload)
+    },
+
     setPlayoutSchedule(context) {
       context.commit('updatePlayoutSchedule')
 
@@ -482,7 +493,7 @@ export default new Vuex.Store({
 
     exportSchedule(context, filename) {
       const schedule = JSON.stringify(context.state.schedule, null, 2)
-      fs.writeFile(filename, schedule)
+      fs.writeFile(filename, schedule, {}, () => undefined)
     },
 
     importSchedule(context, filename) {

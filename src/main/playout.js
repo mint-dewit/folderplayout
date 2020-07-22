@@ -10,6 +10,7 @@ export class PlayoutManager {
     this.scanner = new MediaScanner(API.settings.mediaScannerURL)
     this.parser = new RecurrenceParser(
       (name) => this.scanner.getMediaDuration(name),
+      (name) => this.scanner.getMediaTime(name),
       (name) => this.scanner.getFolderContents(name),
       null,
       () => null
