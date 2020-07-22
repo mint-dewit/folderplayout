@@ -58,21 +58,21 @@ export default {
         toaster: 'b-toaster-bottom-right',
       })
     },
-    exportSchedule: function () {
-      const filename = dialog.showSaveDialog({
+    exportSchedule: async function () {
+      const { filePath, canceled } = await dialog.showSaveDialog({
         title: 'Export schedule',
         filters: [{ name: 'JSON', extensions: ['json'] }],
       })
-      if (filename) this.$store.dispatch('exportSchedule', filename)
+      if (filePath && !canceled) this.$store.dispatch('exportSchedule', filePath)
     },
-    importSchedule: function () {
-      const filename = dialog.showOpenDialog({
+    importSchedule: async function () {
+      const { canceled, filePaths } = dialog.showOpenDialog({
         title: 'Import schedule',
         filters: [{ name: 'JSON', extensions: ['json'] }],
         properties: ['openFile'],
       })
-      if (filename && filename.length > 0) {
-        this.$store.dispatch('importSchedule', filename[0])
+      if (!canceled && filePaths && filePaths.length > 0) {
+        this.$store.dispatch('importSchedule', filePaths[0])
         this.$router.push('/schedule')
       }
     },
