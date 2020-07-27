@@ -19,9 +19,7 @@
 
     <b-row v-if="editObject && editObject.type !== 'group'">
       <b-col>
-        <b-form-checkbox v-model="muted" id="audio">
-          Muted
-        </b-form-checkbox>
+        <b-form-checkbox v-model="muted" id="audio">Muted</b-form-checkbox>
       </b-col>
     </b-row>
 
@@ -34,6 +32,10 @@
       <b-form-input id="name" :value="editObject.name" @change="dispatchPath"></b-form-input>
     </b-row>
 
+    <b-row v-if="editObject.type === 'folder'">
+      <h5>Playback order</h5>
+      <b-form-select v-model="sorting" :options="sortingOptions" size="sm" class="mt-3"></b-form-select>
+    </b-row>
     <b-row v-if="editObject.type === 'input'">
       <h5>Input</h5>
       <b-form-input id="input" :value="editObject.input" @change="dispatchInput" type="number"></b-form-input>
@@ -52,9 +54,8 @@
           :checked="days[index]"
           @change="toggleDay(index)"
           :id="day"
+          >{{ day.toUpperCase() }}</b-form-checkbox
         >
-          {{ day.toUpperCase() }}
-        </b-form-checkbox>
       </b-col>
     </b-row>
 
@@ -76,7 +77,7 @@
             </b-btn>
           </b-input-group-prepend>
           <!-- <b-form-input type="date" v-bind:value="date[0]" v-on:change="updateDate($event, index, 0)"></b-form-input>
-          <b-form-input type="date" v-bind:value="date[1]" v-on:change="updateDate($event, index, 1)"></b-form-input> -->
+          <b-form-input type="date" v-bind:value="date[1]" v-on:change="updateDate($event, index, 1)"></b-form-input>-->
           <b-form-datepicker
             type="date"
             v-bind:value="date[0]"
@@ -97,9 +98,7 @@
           <!-- <b-form-input type="date" v-model="newDate[1]"></b-form-input> -->
           <b-form-datepicker v-model="newDate[1]" :state="newDate | validDatesExplicit"></b-form-datepicker>
           <b-input-group-append>
-            <b-btn variant="primary" v-on:click.prevent="addDate()">
-              Add daterange
-            </b-btn>
+            <b-btn variant="primary" v-on:click.prevent="addDate()">Add daterange</b-btn>
           </b-input-group-append>
         </b-input-group>
       </b-col>
@@ -120,9 +119,7 @@
         <b-input-group>
           <b-form-input v-model="newTime"></b-form-input>
           <b-input-group-append>
-            <b-btn variant="primary" @click.prevent="addTime">
-              Add time
-            </b-btn>
+            <b-btn variant="primary" @click.prevent="addTime">Add time</b-btn>
           </b-input-group-append>
         </b-input-group>
       </b-col>
@@ -137,7 +134,7 @@
                 <div class="col s6">
                     <a class="waves-effect waves-light btn" style="width: 100%" v-on:click.prevent="saveObject">Save</a>
                 </div>
-            </div> -->
+  </div>-->
 </template>
 
 <script>
@@ -176,12 +173,26 @@ export default {
       }
       return days
     },
+    sorting: {
+      get: function () {
+        return this.$store.getters.scheduleEntryById(this.id).sort
+      },
+      set: function (value) {
+        this.$store.dispatch('setSorting', { _id: this.id, value })
+      },
+    },
   },
   data: function () {
     return {
       muted: false,
       newTime: '',
       newDate: ['', ''],
+      sortingOptions: [
+        { text: 'Name Ascending', value: 'name_asc' },
+        { text: 'Name Descending', value: 'name_desc' },
+        { text: 'Date Ascending', value: 'date_asc' },
+        { text: 'Date Descending', value: 'date_desc' },
+      ],
     }
   },
   methods: {

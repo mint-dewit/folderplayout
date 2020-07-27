@@ -16,6 +16,16 @@ export class MediaScanner extends EventEmitter {
     this._updateMedia()
   }
 
+  getMediaTime(name) {
+    for (const clip of this.media) {
+      if (clip.name === name.toUpperCase()) {
+        return clip.mediaTime
+      }
+    }
+
+    return 0
+  }
+
   getMediaDuration(name) {
     for (const clip of this.media) {
       if (clip.name === name.toUpperCase()) {
