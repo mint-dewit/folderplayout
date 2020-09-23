@@ -66,7 +66,7 @@ export default {
       if (filePath && !canceled) this.$store.dispatch('exportSchedule', filePath)
     },
     importSchedule: async function () {
-      const { canceled, filePaths } = dialog.showOpenDialog({
+      const { canceled, filePaths } = await dialog.showOpenDialog({
         title: 'Import schedule',
         filters: [{ name: 'JSON', extensions: ['json'] }],
         properties: ['openFile'],
