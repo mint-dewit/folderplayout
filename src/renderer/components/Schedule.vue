@@ -5,7 +5,7 @@
         <b-row>
           <b-col>
             <a href="#" v-on:click.prevent="back()">
-              <h3 style="color: black; float: left;">
+              <h3 style="color: black; float: left">
                 <font-awesome-icon v-if="parentEntry._id != 'MAIN_ENTRY'" icon="arrow-left"></font-awesome-icon>
                 {{ parentEntry.name || 'Untitled' }}
               </h3>

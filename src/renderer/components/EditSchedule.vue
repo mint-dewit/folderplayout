@@ -9,7 +9,7 @@
     <b-row>
       <b-col>
         <p>
-          <a href="#" style="color: black;" v-on:click.prevent="deleteObject">
+          <a href="#" style="color: black" v-on:click.prevent="deleteObject">
             <font-awesome-icon icon="trash"></font-awesome-icon>
           </a>
           type: {{ editObject.type }}
