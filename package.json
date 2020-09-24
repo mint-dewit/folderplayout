@@ -61,7 +61,7 @@
     "axios": "^0.18.0",
     "bootstrap": "^4.4.1",
     "bootstrap-vue": "^2.15.0",
-    "recurrence-parser": "^0.5.0",
+    "recurrence-parser": "^0.5.1",
     "superfly-timeline": "^8.0.0",
     "timeline-state-resolver": "^3.20.1",
     "uid": "^0.0.2",
