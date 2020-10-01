@@ -8567,10 +8567,10 @@ rechoir@^0.6.2:
   dependencies:
     resolve "^1.1.6"
 
-recurrence-parser@^0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/recurrence-parser/-/recurrence-parser-0.5.1.tgz#fe88ed32aae4f6c0cb8c269d7b07c2b8861784bb"
-  integrity sha512-FSB2ccRQ6qKsa74R/F0mszTkeHB7ISAbw+Fk+B4CtegKahagLQkDATOaeZ+wWfbqL+4veKwtSKJF6juNw+pTXw==
+recurrence-parser@^0.5.2:
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/recurrence-parser/-/recurrence-parser-0.5.2.tgz#d53d8d9c0c3449197e92097f07fecf44d7cb5d37"
+  integrity sha512-8aAfdBtUC0Guws/A2MweWKXo/IuMb51NbWNm5o3cOsdnFhX5JO4fVKae3y29YwSIfOpc6F1vRdGkMSa91MsS/g==
   dependencies:
     superfly-timeline "^7.3.1"
     tslib "^1.9.0"
