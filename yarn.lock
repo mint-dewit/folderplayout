@@ -8567,13 +8567,14 @@ rechoir@^0.6.2:
   dependencies:
     resolve "^1.1.6"
 
-recurrence-parser@^0.5.2:
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/recurrence-parser/-/recurrence-parser-0.5.2.tgz#d53d8d9c0c3449197e92097f07fecf44d7cb5d37"
-  integrity sha512-8aAfdBtUC0Guws/A2MweWKXo/IuMb51NbWNm5o3cOsdnFhX5JO4fVKae3y29YwSIfOpc6F1vRdGkMSa91MsS/g==
+recurrence-parser@^0.5.3:
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/recurrence-parser/-/recurrence-parser-0.5.3.tgz#0de69811e5b4a4774f524460129c8f46aa43c2fd"
+  integrity sha512-HAxq8qW1+jDkoB+s9Eo13pvm88fTML871hTwIeQkt8cpv5k4b0bSsNwFdvACh30mnOustIh4HQXyIxhat0P+xQ==
   dependencies:
     superfly-timeline "^7.3.1"
     tslib "^1.9.0"
+    yargs-parser "*"
 
 redent@^1.0.0:
   version "1.0.0"
@@ -10991,6 +10992,11 @@ yallist@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/yallist/-/yallist-4.0.0.tgz#9bb92790d9c0effec63be73519e11a35019a3a72"
   integrity sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==
+
+yargs-parser@*:
+  version "20.2.3"
+  resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-20.2.3.tgz#92419ba867b858c868acf8bae9bf74af0dd0ce26"
+  integrity sha512-emOFRT9WVHw03QSvN5qor9QQT9+sw5vwxfYweivSMHTcAXPefwVae2FjO7JJjj8hCE4CzPOPeFM83VwT29HCww==
 
 yargs-parser@^13.1.2:
   version "13.1.2"

@@ -50,9 +50,14 @@ export class PlayoutManager {
 
     let tries = 0
     while (time < stopCondition && tries < 1000 && this.API.playoutSchedule.length > 0) {
-      const tl = this.parser.getNextTimeline(new DateObj(time))
-      tls.push(tl)
-      time = tl.end + 1000
+      try {
+        const tl = this.parser.getNextTimeline(new DateObj(time))
+        tls.push(tl)
+        time = tl.end + 1000
+      } catch (e) {
+        console.log(e) // do something here
+        return
+      }
       tries++
     }
 
