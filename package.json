@@ -1,6 +1,6 @@
 {
   "name": "folderplayout",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "author": "Balte de Wit <contact@balte.nl>",
   "description": "A scheduled playout client for CasparCG.",
   "license": "MIT",
@@ -61,7 +61,7 @@
     "axios": "^0.18.0",
     "bootstrap": "^4.4.1",
     "bootstrap-vue": "^2.15.0",
-    "recurrence-parser": "^0.5.3",
+    "recurrence-parser": "^0.5.4",
     "superfly-timeline": "^8.0.0",
     "timeline-state-resolver": "^3.20.1",
     "uid": "^0.0.2",
